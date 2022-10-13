@@ -1,4 +1,7 @@
 {
+  "require": {
+    "mongodb/mongodb": "^1.8.0"
+  },
   "autoload": {
     "psr-4": {
       "BUSaragon\\": "../../"
