@@ -61,6 +61,9 @@ class map {
 
         if ( is_array( $array_markers ) ) {
             foreach ( $array_markers as $marker ) {
+                $marker[ 'title' ] = htmlspecialchars( $marker[ 'title' ] );
+                $marker[ 'title' ] = str_replace( "'", "\'", $marker[ 'title' ] );
+
                 $str .= " 					var marker_" . $marker[ 'id' ] . " = new google.maps.Marker({
                                                                         position:{lat:" . $marker[ 'lat' ] . ",lng:" . $marker[ 'lng' ] . "},
                                                                         title:'TEST',
