@@ -50,7 +50,7 @@ class controller {
      */
     protected function crondaemon() {
         // First, we get bus stop listing for all Aragon
-        $array_endpoints = [ \BUSaragon\common\controller::ENDPOINT_BUS_STOP_ARAGON, \BUSaragon\common\controller::ENDPOINT_BUS_STOP_ZARAGOZA ];
+        $array_endpoints = [ \BUSaragon\common\controller::ENDPOINT_BUS_STOP_ARAGON, \BUSaragon\common\controller::ENDPOINT_BUS_STOP_CTAZ ];
         $bus_stop_obj = new model();
 
         foreach ( $array_endpoints as $endpoint ) {
@@ -61,6 +61,17 @@ class controller {
                 foreach ( $array_objs as $obj ) {
                     $bus_stop_obj->update_from_api( $obj );
                 }
+            }
+        }
+
+        // Remaining times for CTAZ bus stop
+        $api_url = \BUSaragon\common\controller::get_endpoint_url( \BUSaragon\common\controller::ENDPOINT_BUS_STOP_REMAINING_TIMES_CTAZ );
+        $array_objs = json_decode( file_get_contents( $api_url ) );
+        $bus_stop_times_obj = new remainingtimemodel();
+
+        if ( !empty( $array_objs ) ) {
+            foreach ( $array_objs as $obj ) {
+                $bus_stop_times_obj->update_times_from_api( $obj );
             }
         }
 

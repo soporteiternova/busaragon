@@ -27,7 +27,8 @@ namespace BUSaragon\common;
 class controller {
 
     const ENDPOINT_BUS_STOP_ARAGON = 1;
-    const ENDPOINT_BUS_STOP_ZARAGOZA = 2;
+    const ENDPOINT_BUS_STOP_CTAZ = 2;
+    const ENDPOINT_BUS_STOP_REMAINING_TIMES_CTAZ = 3;
 
     /**
      * Funcion para mostrar la cabecera html
@@ -205,8 +206,11 @@ class controller {
             case self::ENDPOINT_BUS_STOP_ARAGON:
                 $url = 'https://opendata.aragon.es/GA_OD_Core/download?view_id=150&formato=json';
                 break;
-            case self::ENDPOINT_BUS_STOP_ZARAGOZA:
+            case self::ENDPOINT_BUS_STOP_CTAZ:
                 $url = 'https://opendata.aragon.es/GA_OD_Core/download?resource_id=2187&formato=json';
+                break;
+            case self::ENDPOINT_BUS_STOP_REMAINING_TIMES_CTAZ:
+                $url = 'https://opendata.aragon.es/GA_OD_Core/download?resource_id=2190&formato=json';
                 break;
         }
         return $url;

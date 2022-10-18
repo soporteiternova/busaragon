@@ -64,14 +64,14 @@ class model extends \BUSaragon\common\model {
             $ret = $this->store();
         } elseif ( isset( $api_object->stop_id ) ) {
             $array_criteria[] = [ 'code', 'eq', $api_object->stop_id, 'string' ];
-            $array_criteria[] = [ 'network', 'eq', \BUSaragon\common\controller::ENDPOINT_BUS_STOP_ZARAGOZA, 'int' ];
+            $array_criteria[] = [ 'network', 'eq', \BUSaragon\common\controller::ENDPOINT_BUS_STOP_CTAZ, 'int' ];
 
             $array_obj = $this->get_all( $array_criteria, [], 0, 1 );
             if ( !empty( $array_obj ) ) {
                 $saved_obj = reset( $array_obj );
                 $this->_id = $saved_obj->_id;
             }
-            $this->network = \BUSaragon\common\controller::ENDPOINT_BUS_STOP_ZARAGOZA;
+            $this->network = \BUSaragon\common\controller::ENDPOINT_BUS_STOP_CTAZ;
             $this->code = $api_object->stop_id;
             if ( isset( $api_object->nucleo ) ) {
                 $this->city = $api_object->nucleo;
@@ -126,8 +126,8 @@ class model extends \BUSaragon\common\model {
         }
 
         // Common attributes: string
-        $array_integer = [ 'code', 'address', 'city' ];
-        foreach ( $array_integer as $key ) {
+        $array_string = [ 'code', 'address', 'city' ];
+        foreach ( $array_string as $key ) {
             $this->{$key} = (string) \call_user_func( $callback_function, $this->{$key} );
         }
         $this->lat_lng = [ (float) $this->lat_lng[ 0 ], (float) $this->lat_lng[ 1 ] ];
