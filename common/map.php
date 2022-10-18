@@ -64,23 +64,29 @@ class map {
                 $marker[ 'title' ] = htmlspecialchars( $marker[ 'title' ] );
                 $marker[ 'title' ] = str_replace( "'", "\'", $marker[ 'title' ] );
 
-                $str .= " 					var marker_" . $marker[ 'id' ] . " = new google.maps.Marker({
+                $str .= " 			var contentString" . $marker[ 'id' ] . "='';		
+                                    var opened_infowindow=null;
+                 					var marker_" . $marker[ 'id' ] . " = new google.maps.Marker({
                                                                         position:{lat:" . $marker[ 'lat' ] . ",lng:" . $marker[ 'lng' ] . "},
                                                                         title:'TEST',
                                                                         icon: {
                                                                           url: 'http://maps.google.com/mapfiles/ms/icons/" . $marker[ 'marker_color' ] . "-dot.png'
-                                                                        },
-                                                                    });
+                                                                        },";
+                if ( isset( $marker[ 'label' ] ) && !empty( $marker[ 'label' ] ) ) {
+                    $str .= " 					    label:'" . $marker[ 'label' ] . "'";
+                }
+                $str .= "                                              });
                                              marker_" . $marker[ 'id' ] . ".setMap(map{$rand});
-                                             infowindow_" . $marker[ 'id' ] . "= new google.maps.InfoWindow({content:'<div id=\'content\'>" . $marker[ 'title' ] . "</div>'});
+                                             infowindow_" . $marker[ 'id' ] . "= new google.maps.InfoWindow({content:'<div id=\'content_infowindow_" . $marker[ 'id' ] . "\'>" . $marker[ 'title' ] . "</div>'});
                                              marker_" . $marker[ 'id' ] . ".addListener('click', () => {
                                                 infowindow_" . $marker[ 'id' ] . ".open({
                                                   anchor: marker_" . $marker[ 'id' ] . ",
                                                   map{$rand},
-                                                  shouldFocus: true,
-                                                });
-                                              });
-                ";
+                                                  shouldFocus: true,				    });";
+                if ( isset( $marker[ 'url' ] ) && !empty( $marker[ 'url' ] ) ) {
+                    $str .= "                                                $('#content_infowindow_" . $marker[ 'id' ] . "').load('" . $marker[ 'url' ] . "');";
+                }
+                $str .= "                     if(opened_infowindow!==null)opened_infowindow.close();opened_infowindow=infowindow_" . $marker[ 'id' ] . "});";
             }
         }
 

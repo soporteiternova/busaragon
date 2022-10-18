@@ -38,15 +38,16 @@ class remainingtimemodel extends \BUSaragon\common\model {
         $ret = false;
         $this->_id = null;
 
-        if ( isset( $api_object->TR ) ) {
+        if ( isset( $api_object->stop_id ) ) {
             $date = date( 'Y-m-d' );
+
             $array_criteria[] = [ 'code', 'eq', $api_object->stop_id, 'string' ];
             $array_criteria[] = [ 'date', 'eq', $date, 'string' ];
 
             $array_obj = $this->get_all( $array_criteria, [], 0, 1 );
             if ( !empty( $array_obj ) ) {
                 $saved_obj = reset( $array_obj );
-                $this->set( $saved_obj );
+                $this->set( \BUSaragon\common\utils::cast_object_to_array( $saved_obj ) );
             } else {
                 $this->date = $date;
                 $this->code = $api_object->stop_id;
@@ -54,19 +55,18 @@ class remainingtimemodel extends \BUSaragon\common\model {
 
             if ( !isset( $this->lines[ $api_object->id_linea ] ) ) {
                 $this->lines[ $api_object->id_linea ] = $api_object->name;
+                $this->routes[ $api_object->id_linea ] = [];
+                $this->times[ $api_object->id_linea ] = [];
             }
 
-            $route_id = array_search( $api_object->route, $this->routes );
-            if ( $route_id === false ) {
-                $this->routes[] = $api_object->route;
-                $route_id = key( $this->routes );
-                $this->times[ $route_id ] = [];
+            if ( !isset( $this->routes[ $api_object->id_linea ][ $api_object->id ] ) ) {
+                $this->routes[ $api_object->id_linea ][ $api_object->id ] = $api_object->route;
+                $this->times[ $api_object->id_linea ][ $api_object->id ] = [];
             }
 
-            $time_id = array_search( $api_object->remaining_time, $this->times[ $route_id ] );
+            $time_id = array_search( $api_object->remaining_time, $this->times[ $api_object->id_linea ][ $api_object->id ] );
             if ( $time_id === false ) {
-                $this->times[ $route_id ][] = $api_object->remaining_time;
-                asort( $this->times[ $route_id ] );
+                $this->times[ $api_object->id_linea ][ $api_object->id ][] = $api_object->remaining_time;
             }
 
             $ret = $this->store();
@@ -107,17 +107,23 @@ class remainingtimemodel extends \BUSaragon\common\model {
         }
 
         // Common attributes: integer
-        $array_integer = [ 'network' ];// [ 'icon', 'type', 'loc_contract', 'priority' ];
+        $array_integer = [];// [ 'icon', 'type', 'loc_contract', 'priority' ];
         foreach ( $array_integer as $key ) {
             $this->{$key} = (integer) $this->{$key};
         }
 
         // Common attributes: string
-        $array_string = [ 'code', 'date', 'routes' ];
+        $array_string = [ 'code', 'date', 'lines', 'routes' ];
         foreach ( $array_string as $key ) {
             if ( is_array( $this->{$key} ) ) {
                 foreach ( $this->{$key} as $val_key => $value ) {
-                    $this->{$key}[ $val_key ] = (string) \call_user_func( $callback_function, $value );
+                    if ( is_array( $this->{$key}[ $val_key ] ) ) {
+                        foreach ( $this->{$key}[ $val_key ] as $val_key2 => $value2 ) {
+                            $this->{$key}[ $val_key ][ $val_key2 ] = (string) \call_user_func( $callback_function, $value2 );
+                        }
+                    } else {
+                        $this->{$key}[ $val_key ] = (string) \call_user_func( $callback_function, $value );
+                    }
                 }
             } else {
                 $this->{$key} = (string) \call_user_func( $callback_function, $this->{$key} );
@@ -129,5 +135,52 @@ class remainingtimemodel extends \BUSaragon\common\model {
         foreach ( $array_boolean as $key ) {
             $this->{$key} = (boolean) $this->{$key};
         }
+    }
+
+    /**
+     * Gets last time arriving for a given bus stop passed by OpenData code
+     *
+     * @param string $code bus stop OpenData identificator
+     * @param string $str_return default return if it doesn't exist any remaining time
+     *
+     * @return string
+     */
+    public function get_busstop_times( $code, $str_return = '' ) {
+        $array_criteria[] = [ 'code', 'eq', $code, 'string' ];
+        $array_times = $this->get_all( $array_criteria, [ 'date' => -1 ], 0, 1 );
+
+        if ( !empty( $array_times ) ) {
+            $stop_times = reset( $array_times );
+            $str_return = $this->get_formated_times( $stop_times );
+        }
+
+        return $str_return;
+    }
+
+    /**
+     * Returns arriving bus stop times in html format to be showed to the user
+     *
+     * @param model $obj_remainingtimes
+     *
+     * @return string
+     */
+    private function get_formated_times( $obj_remainingtimes = null ) {
+        if ( !is_null( $obj_remainingtimes ) ) {
+            $this->set( \BUSaragon\common\utils::cast_object_to_array( $obj_remainingtimes ) );
+        }
+
+        $str_return = '';
+        foreach ( $this->times as $line_id => $routes ) {
+            $str_return .= '<table><th><td<b>' . $this->lines[ $line_id ] . '</b></td></th>';
+            foreach ( $routes as $route_id => $times ) {
+                $str_return .= '<tr><td>' . $this->routes[ $line_id ][ $route_id ] . '</td></tr>';
+                if ( !empty( $this->times[ $line_id ][ $route_id ] ) ) {
+                    $str_return .= '<tr><td>' . implode( '</td></tr><tr><td>', $times );
+                }
+            }
+            $str_return .= '</table>';
+        }
+
+        return $str_return;
     }
 }

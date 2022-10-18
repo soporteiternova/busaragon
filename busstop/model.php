@@ -150,6 +150,7 @@ class model extends \BUSaragon\common\model {
     public function get_array_markers( $array_criteria = [] ) {
         $array_objs = $this->get_all( $array_criteria );
         $array_return = [];
+        $server_url = \BUSaragon\common\utils::get_server_url();
 
         foreach ( $array_objs as $obj ) {
             $str_address = htmlspecialchars( $obj->address );
@@ -158,8 +159,8 @@ class model extends \BUSaragon\common\model {
                 'lat' => $obj->lat_lng[ 0 ],
                 'lng' => $obj->lat_lng[ 1 ],
                 'title' => $str_address,
-                'description' => $str_address,
                 'marker_color' => $obj->network === \BUSaragon\common\controller::ENDPOINT_BUS_STOP_ARAGON ? 'red' : 'green',
+                'url' => $obj->network === \BUSaragon\common\controller::ENDPOINT_BUS_STOP_CTAZ ? $server_url . '/?&zone=bus_stop&action=get_remaining_time&bus_stop_id=' . $obj->code : '',
             ];
         }
 

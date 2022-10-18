@@ -35,6 +35,9 @@ class controller {
             case 'crondaemon':
                 return $this->crondaemon();
                 break;
+            case 'get_remaining_time':
+                return $this->remaining_time();
+                break;
             case 'listing':
             default:
                 return $this->listing();
@@ -50,23 +53,28 @@ class controller {
      */
     protected function crondaemon() {
         // First, we get bus stop listing for all Aragon
-        $array_endpoints = [ \BUSaragon\common\controller::ENDPOINT_BUS_STOP_ARAGON, \BUSaragon\common\controller::ENDPOINT_BUS_STOP_CTAZ ];
-        $bus_stop_obj = new model();
+        $minute = date( 'i' );
+        if ( $minute === '00' ) {
+            $array_endpoints = [ \BUSaragon\common\controller::ENDPOINT_BUS_STOP_ARAGON, \BUSaragon\common\controller::ENDPOINT_BUS_STOP_CTAZ ];
+            $bus_stop_obj = new model();
 
-        foreach ( $array_endpoints as $endpoint ) {
-            $api_url = \BUSaragon\common\controller::get_endpoint_url( $endpoint );
-            $array_objs = json_decode( file_get_contents( $api_url ) );
+            foreach ( $array_endpoints as $endpoint ) {
+                $api_url = \BUSaragon\common\controller::get_endpoint_url( $endpoint );
+                $array_objs = json_decode( file_get_contents( $api_url ) );
 
-            if ( !empty( $array_objs ) ) {
-                foreach ( $array_objs as $obj ) {
-                    $bus_stop_obj->update_from_api( $obj );
+                if ( !empty( $array_objs ) ) {
+                    foreach ( $array_objs as $obj ) {
+                        $bus_stop_obj->update_from_api( $obj );
+                    }
                 }
             }
         }
 
         // Remaining times for CTAZ bus stop
+        set_time_limit( 120 );
         $api_url = \BUSaragon\common\controller::get_endpoint_url( \BUSaragon\common\controller::ENDPOINT_BUS_STOP_REMAINING_TIMES_CTAZ );
         $array_objs = json_decode( file_get_contents( $api_url ) );
+
         $bus_stop_times_obj = new remainingtimemodel();
 
         if ( !empty( $array_objs ) ) {
@@ -86,5 +94,12 @@ class controller {
         $obj_busstop = new model();
         $array_markers = $obj_busstop->get_array_markers();
         return \BUSaragon\common\map::create_map( $array_markers, 100, 800, true );
+    }
+
+    private function remaining_time() {
+        $bus_stop_id = \BUSaragon\common\controller::get( 'bus_stop_id' );
+
+        $obj_remainingtime = new remainingtimemodel();
+        return $obj_remainingtime->get_busstop_times( $bus_stop_id );
     }
 }

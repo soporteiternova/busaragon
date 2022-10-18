@@ -196,4 +196,14 @@ class utils {
 
         return $haystackarray;
     }
+
+    /**
+     * Returns current server url to compose links
+     * @return string
+     */
+    public static function get_server_url() {
+        $str_return = ( $_SERVER[ 'HTTPS' ] === 'on' ) ? 'https://' : 'http://';
+        $str_return .= $_SERVER[ 'HTTP_HOST' ];
+        return $str_return;
+    }
 }
