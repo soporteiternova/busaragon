@@ -29,6 +29,7 @@ class controller {
     const ENDPOINT_BUS_STOP_ARAGON = 1;
     const ENDPOINT_BUS_STOP_CTAZ = 2;
     const ENDPOINT_BUS_STOP_REMAINING_TIMES_CTAZ = 3;
+    const ENDOPOINT_BUS_VEHICLES_POSITION_ARAGON = 4;
 
     /**
      * Funcion para mostrar la cabecera html
@@ -102,6 +103,22 @@ class controller {
      * Funcion para mostrar el cuerpo de la pagina
      */
     public static function show_html_body() {
+        $zone = self::get( 'zone' );
+        $class_start = '';
+        $class_map = '';
+        $class_routes = '';
+
+        switch ( $zone ) {
+            case'bus_stop':
+            case 'vehicles':
+                $class_map = 'current';
+                break;
+            case 'routes':
+                $class_routes = 'current';
+                break;
+            default:
+                $class_start = 'current';
+        }
         $str = '<body class="no-sidebar is-preload">
             <div id="page-wrapper">
     
@@ -110,15 +127,15 @@ class controller {
                     <h1 id="logo"><a href="index.html">BUS <span>Arag&oacute;n</span></a></h1>
                     <nav id="nav">
                         <ul>
-                            <li class="current"><a href="index.html">Inicio</a></li>
-                            <li class="submenu">
+                            <li class="' . $class_start . '"><a href="index.html">Inicio</a></li>
+                            <li class="submenu ' . $class_map . '">
                                 <a href="#">Visualizaci&oacute;n sobre mapa</a>
                                 <ul>
                                     <li><a href="?&amp;zone=bus_stop&amp;action=listing">Paradas</a></li>
-                                    <li><a href="right-sidebar.html">Veh&iacute;culos</a></li>
+                                    <li><a href="?&amp;zone=vehicles&amp;action=listing">Veh&iacute;culos</a></li>
                                 </ul>
                             </li>
-                            <li class="submenu">
+                            <li class="submenu ' . $class_routes . '">
                                 <a href="#">Informaci&oacute;n sobre veh&iacute;culos</a>
                                 <ul>
                                     <li><a href="left-sidebar.html">Listado de rutas</a></li>
@@ -150,6 +167,9 @@ class controller {
                 $controller = new \BUSaragon\busstop\controller();
                 $str .= $controller->actions();
                 break;
+            case 'vehicles':
+                $controller = new \BUSaragon\vehicles\controller();
+                $str .= $controller->actions();
             default:
         }
         /*<section >
@@ -211,6 +231,9 @@ class controller {
                 break;
             case self::ENDPOINT_BUS_STOP_REMAINING_TIMES_CTAZ:
                 $url = 'https://opendata.aragon.es/GA_OD_Core/download?resource_id=2190&formato=json';
+                break;
+            case self::ENDOPOINT_BUS_VEHICLES_POSITION_ARAGON:
+                $url = 'https://opendata.aragon.es/GA_OD_Core/download?resource_id=2181&formato=json';
                 break;
         }
         return $url;

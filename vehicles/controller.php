@@ -14,7 +14,7 @@
  */
 
 /**
- * Bus stop controller
+ * Vehicles controller
  * @author ITERNOVA (info@iternova.net)
  * @version 1.0.0 - 20221001
  * @package busstop
@@ -22,7 +22,7 @@
  * @license http://www.gnu.org/licenses/gpl-3.0.html
  */
 
-namespace BUSaragon\busstop;
+namespace BUSaragon\vehicles;
 
 class controller {
     /**
@@ -34,9 +34,6 @@ class controller {
         switch ( $action ) {
             case 'crondaemon':
                 return $this->crondaemon();
-                break;
-            case 'get_remaining_time':
-                return $this->remaining_time();
                 break;
             case 'listing':
             default:
@@ -54,32 +51,15 @@ class controller {
     protected function crondaemon() {
         // First, we get bus stop listing for all Aragon
         $minute = date( 'i' );
-        if ( $minute === '00' ) {
-            $array_endpoints = [ \BUSaragon\common\controller::ENDPOINT_BUS_STOP_ARAGON, \BUSaragon\common\controller::ENDPOINT_BUS_STOP_CTAZ ];
-            $bus_stop_obj = new model();
+        if ( true || $minute === '00' ) {
+            $api_url = \BUSaragon\common\controller::get_endpoint_url( \BUSaragon\common\controller::ENDOPOINT_BUS_VEHICLES_POSITION_ARAGON );
+            $array_objs = json_decode( file_get_contents( $api_url ) );
+            $obj_vehicle = new model();
 
-            foreach ( $array_endpoints as $endpoint ) {
-                $api_url = \BUSaragon\common\controller::get_endpoint_url( $endpoint );
-                $array_objs = json_decode( file_get_contents( $api_url ) );
-
-                if ( !empty( $array_objs ) ) {
-                    foreach ( $array_objs as $obj ) {
-                        $bus_stop_obj->update_from_api( $obj );
-                    }
+            if ( !empty( $array_objs ) ) {
+                foreach ( $array_objs as $obj ) {
+                    $obj_vehicle->update_from_api( $obj );
                 }
-            }
-        }
-
-        // Remaining times for CTAZ bus stop
-        set_time_limit( 120 );
-        $api_url = \BUSaragon\common\controller::get_endpoint_url( \BUSaragon\common\controller::ENDPOINT_BUS_STOP_REMAINING_TIMES_CTAZ );
-        $array_objs = json_decode( file_get_contents( $api_url ) );
-
-        $bus_stop_times_obj = new remainingtimemodel();
-
-        if ( !empty( $array_objs ) ) {
-            foreach ( $array_objs as $obj ) {
-                $bus_stop_times_obj->update_times_from_api( $obj );
             }
         }
 
@@ -87,19 +67,12 @@ class controller {
     }
 
     /**
-     * Shows bus stop in map
+     * Shows bus in map
      * @return string
      */
     private function listing() {
-        $obj_busstop = new model();
-        $array_markers = $obj_busstop->get_array_markers();
+        $obj_bus = new model();
+        $array_markers = $obj_bus->get_array_markers();
         return \BUSaragon\common\map::create_map( $array_markers, 100, 800, true );
-    }
-
-    private function remaining_time() {
-        $bus_stop_id = \BUSaragon\common\controller::get( 'bus_stop_id' );
-
-        $obj_remainingtime = new remainingtimemodel();
-        return $obj_remainingtime->get_busstop_times( $bus_stop_id );
     }
 }
