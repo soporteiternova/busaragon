@@ -29,8 +29,10 @@ class controller {
      * Action controller for busstop class
      * @return bool
      */
-    public function actions() {
-        $action = \BUSaragon\common\controller::get( 'action' );
+    public function actions( $action = '' ) {
+        if ( $action === '' ) {
+            $action = \BUSaragon\common\controller::get( 'action' );
+        }
         switch ( $action ) {
             case 'crondaemon':
                 return $this->crondaemon();
@@ -49,10 +51,10 @@ class controller {
      * @return bool
      */
     protected function crondaemon() {
-        // First, we get bus stop listing for all Aragon
-        $minute = date( 'i' );
-        if ( true || $minute === '00' ) {
-            $api_url = \BUSaragon\common\controller::get_endpoint_url( \BUSaragon\common\controller::ENDOPOINT_BUS_VEHICLES_POSITION_ARAGON );
+        // Loading of vehicles listing
+        $minute = (int) date( 'i' );
+        if ( $minute >= 0 && $minute <= 5 ) {
+            $api_url = \BUSaragon\common\controller::get_endpoint_url( \BUSaragon\common\controller::ENDOPOINT_BUS_VEHICLES_ARAGON );
             $array_objs = json_decode( file_get_contents( $api_url ) );
             $obj_vehicle = new model();
 
@@ -61,6 +63,24 @@ class controller {
                     $obj_vehicle->update_from_api( $obj );
                 }
             }
+        }
+
+        // Loading last positions
+        $array_api_url = [ \BUSaragon\common\controller::ENDOPOINT_BUS_VEHICLES_POSITION_ARAGON => \BUSaragon\common\controller::get_endpoint_url( \BUSaragon\common\controller::ENDOPOINT_BUS_VEHICLES_POSITION_ARAGON ),
+            \BUSaragon\common\controller::ENDOPOINT_BUS_VEHICLES_POSITION_CTAZ => \BUSaragon\common\controller::get_endpoint_url( \BUSaragon\common\controller::ENDOPOINT_BUS_VEHICLES_POSITION_CTAZ ) ];
+
+        foreach ( $array_api_url as $api_endpoint => $api_url ) {
+            $array_objs = json_decode( file_get_contents( $api_url ) );
+            $n_updated = 0;
+            if ( !empty( $array_objs ) ) {
+                foreach ( $array_objs as $obj ) {
+                    $obj_vehicle_position = new modelposition();
+                    if ( $obj_vehicle_position->update_from_api( $obj, $api_endpoint ) ) {
+                        $n_updated++;
+                    }
+                }
+            }
+            var_dump( 'Updated ' . $n_updated . ' positions for ' . $api_endpoint );
         }
 
         return true;

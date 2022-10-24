@@ -50,7 +50,6 @@ class model extends \BUSaragon\common\model {
      * @return bool
      */
     public function update_from_api( $api_object ) {
-        $ret = false;
         $this->_id = null;
 
         $array_criteria[] = [ 'code', 'eq', $api_object->id, 'string' ];
@@ -81,9 +80,8 @@ class model extends \BUSaragon\common\model {
         foreach ( $array_equivalence as $attr => $tag ) {
             $this->{$attr} = $api_object->{$tag};
         }
-        $ret = $this->store();
 
-        return $ret;
+        return $this->store();
     }
 
     /**

@@ -29,7 +29,9 @@ class controller {
     const ENDPOINT_BUS_STOP_ARAGON = 1;
     const ENDPOINT_BUS_STOP_CTAZ = 2;
     const ENDPOINT_BUS_STOP_REMAINING_TIMES_CTAZ = 3;
-    const ENDOPOINT_BUS_VEHICLES_POSITION_ARAGON = 4;
+    const ENDOPOINT_BUS_VEHICLES_ARAGON = 4;
+    const ENDOPOINT_BUS_VEHICLES_POSITION_ARAGON = 5;
+    const ENDOPOINT_BUS_VEHICLES_POSITION_CTAZ = 6;
 
     /**
      * Funcion para mostrar la cabecera html
@@ -232,10 +234,30 @@ class controller {
             case self::ENDPOINT_BUS_STOP_REMAINING_TIMES_CTAZ:
                 $url = 'https://opendata.aragon.es/GA_OD_Core/download?resource_id=2190&formato=json';
                 break;
-            case self::ENDOPOINT_BUS_VEHICLES_POSITION_ARAGON:
+            case self::ENDOPOINT_BUS_VEHICLES_ARAGON:
                 $url = 'https://opendata.aragon.es/GA_OD_Core/download?resource_id=2181&formato=json';
+                break;
+            case self::ENDOPOINT_BUS_VEHICLES_POSITION_ARAGON:
+                $url = 'https://opendata.aragon.es/GA_OD_Core/download?resource_id=2183&formato=json';
+                break;
+            case self::ENDOPOINT_BUS_VEHICLES_POSITION_CTAZ:
+                $url = 'https://opendata.aragon.es/GA_OD_Core/download?resource_id=2196&formato=json';
                 break;
         }
         return $url;
+    }
+
+    /**
+     * Executes cron functions to load data from OpenData API
+     * @return bool
+     */
+    public function crondaemon() {
+        $controller = new \BUSaragon\busstop\controller();
+        $ret = $controller->actions( 'crondaemon' );
+
+        $controller = new \BUSaragon\vehicles\controller();
+        $ret &= $controller->actions( 'crondaemon' );
+
+        return $ret;
     }
 }
