@@ -61,19 +61,26 @@ class map {
 
         if ( is_array( $array_markers ) ) {
             foreach ( $array_markers as $marker ) {
-                $marker[ 'title' ] = htmlspecialchars( $marker[ 'title' ] );
                 $marker[ 'title' ] = str_replace( "'", "\'", $marker[ 'title' ] );
 
                 $str .= " 			var contentString" . $marker[ 'id' ] . "='';		
                                     var opened_infowindow=null;
                  					var marker_" . $marker[ 'id' ] . " = new google.maps.Marker({
                                                                         position:{lat:" . $marker[ 'lat' ] . ",lng:" . $marker[ 'lng' ] . "},
-                                                                        title:'TEST',
+                                                                        title:'" . $marker[ 'title' ] . "',";
+                if ( isset( $marker[ 'label' ] ) && !empty( $marker[ 'label' ] ) ) {
+                    $str .= " 					    label:'" . $marker[ 'label' ] . "'";
+                }
+                if ( isset( $marker[ 'icon' ] ) && !empty( $marker[ 'icon' ] ) ) {
+                    $str .= " 
+                                                                        icon: {
+                                                                          url: '" . $marker[ 'icon' ] . "'
+                                                                        },";
+                } else {
+                    $str .= "
                                                                         icon: {
                                                                           url: 'http://maps.google.com/mapfiles/ms/icons/" . $marker[ 'marker_color' ] . "-dot.png'
                                                                         },";
-                if ( isset( $marker[ 'label' ] ) && !empty( $marker[ 'label' ] ) ) {
-                    $str .= " 					    label:'" . $marker[ 'label' ] . "'";
                 }
                 $str .= "                                              });
                                              marker_" . $marker[ 'id' ] . ".setMap(map{$rand});

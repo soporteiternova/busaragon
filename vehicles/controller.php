@@ -83,6 +83,18 @@ class controller {
             var_dump( 'Updated ' . $n_updated . ' positions for ' . $api_endpoint );
         }
 
+        // Loading historic traveling
+        $array_objs = json_decode( file_get_contents( \BUSaragon\common\controller::get_endpoint_url() ) );
+        $n_updated = 0;
+        if ( !empty( $array_objs ) ) {
+            foreach ( $array_objs as $obj ) {
+                $obj_vehicle_position = new modelposition();
+                if ( $obj_vehicle_position->update_from_api( $obj, $api_endpoint ) ) {
+                    $n_updated++;
+                }
+            }
+        }
+
         return true;
     }
 
@@ -91,7 +103,7 @@ class controller {
      * @return string
      */
     private function listing() {
-        $obj_bus = new model();
+        $obj_bus = new modelposition();
         $array_markers = $obj_bus->get_array_markers();
         return \BUSaragon\common\map::create_map( $array_markers, 100, 800, true );
     }

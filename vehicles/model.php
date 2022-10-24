@@ -134,7 +134,9 @@ class model extends \BUSaragon\common\model {
         foreach ( $array_string as $key ) {
             $this->{$key} = (string) \call_user_func( $callback_function, $this->{$key} );
         }
-        $this->lat_lng = [ (float) $this->lat_lng[ 0 ], (float) $this->lat_lng[ 1 ] ];
+        if ( !emtpy( $this->lat_lng ) ) {
+            $this->lat_lng = [ (float) $this->lat_lng[ 0 ], (float) $this->lat_lng[ 1 ] ];
+        }
 
         // Common attributes: booleans
         $array_boolean = [ 'active' ];

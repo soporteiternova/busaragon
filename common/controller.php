@@ -32,6 +32,8 @@ class controller {
     const ENDOPOINT_BUS_VEHICLES_ARAGON = 4;
     const ENDOPOINT_BUS_VEHICLES_POSITION_ARAGON = 5;
     const ENDOPOINT_BUS_VEHICLES_POSITION_CTAZ = 6;
+    const ENDOPOINT_BUS_VEHICLES_HISTORIC_ARAGON = 7;
+    const ENDOPOINT_BUS_VEHICLES_DISTANCE_ARAGON = 8;
 
     /**
      * Funcion para mostrar la cabecera html
@@ -241,6 +243,12 @@ class controller {
                 $url = 'https://opendata.aragon.es/GA_OD_Core/download?resource_id=2183&formato=json';
                 break;
             case self::ENDOPOINT_BUS_VEHICLES_POSITION_CTAZ:
+                $url = 'https://opendata.aragon.es/GA_OD_Core/download?resource_id=2196&formato=json';
+                break;
+            case self::ENDOPOINT_BUS_VEHICLES_HISTORIC_ARAGON:
+                $url = 'https://opendata.aragon.es/GA_OD_Core/download?resource_id=2196&formato=json';
+                break;
+            case self::ENDOPOINT_BUS_VEHICLES_DISTANCE_ARAGON:
                 $url = 'https://opendata.aragon.es/GA_OD_Core/download?resource_id=2196&formato=json';
                 break;
         }

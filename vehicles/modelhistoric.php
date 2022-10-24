@@ -24,7 +24,7 @@
 
 namespace BUSaragon\vehicles;
 
-class modelposition extends \BUSaragon\common\model {
+class modelhistoric extends \BUSaragon\common\model {
     public $_database_collection = 'vehicles_position';
     public $date = '';
     public $group_id = '';
