@@ -33,6 +33,10 @@ switch ( \BUSaragon\common\controller::get( 'action' ) ) {
         $obj_controller = new \BUSaragon\busstop\controller();
         echo $obj_controller->actions();
         break;
+    case 'get_historic':
+        $obj_controller = new \BUSaragon\vehicles\controller();
+        echo $obj_controller->actions();
+        break;
     default:
         // Index
         \BUSaragon\common\controller::show_html_header();

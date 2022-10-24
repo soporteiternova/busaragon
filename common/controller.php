@@ -246,10 +246,10 @@ class controller {
                 $url = 'https://opendata.aragon.es/GA_OD_Core/download?resource_id=2196&formato=json';
                 break;
             case self::ENDOPOINT_BUS_VEHICLES_HISTORIC_ARAGON:
-                $url = 'https://opendata.aragon.es/GA_OD_Core/download?resource_id=2196&formato=json';
+                $url = 'https://opendata.aragon.es/GA_OD_Core/download?resource_id=2184&formato=json';
                 break;
             case self::ENDOPOINT_BUS_VEHICLES_DISTANCE_ARAGON:
-                $url = 'https://opendata.aragon.es/GA_OD_Core/download?resource_id=2196&formato=json';
+                $url = 'https://opendata.aragon.es/GA_OD_Core/download?resource_id=2185&formato=json';
                 break;
         }
         return $url;

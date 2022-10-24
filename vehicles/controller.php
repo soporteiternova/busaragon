@@ -37,6 +37,9 @@ class controller {
             case 'crondaemon':
                 return $this->crondaemon();
                 break;
+            case 'get_historic':
+                return $this->get_historic();
+                break;
             case 'listing':
             default:
                 return $this->listing();
@@ -84,12 +87,12 @@ class controller {
         }
 
         // Loading historic traveling
-        $array_objs = json_decode( file_get_contents( \BUSaragon\common\controller::get_endpoint_url() ) );
+        $array_objs = json_decode( file_get_contents( \BUSaragon\common\controller::get_endpoint_url( \BUSaragon\common\controller::ENDOPOINT_BUS_VEHICLES_HISTORIC_ARAGON ) ) );
         $n_updated = 0;
         if ( !empty( $array_objs ) ) {
             foreach ( $array_objs as $obj ) {
-                $obj_vehicle_position = new modelposition();
-                if ( $obj_vehicle_position->update_from_api( $obj, $api_endpoint ) ) {
+                $obj_vehicle_position = new modelhistoric();
+                if ( $obj_vehicle_position->update_from_api( $obj, \BUSaragon\common\controller::ENDOPOINT_BUS_VEHICLES_HISTORIC_ARAGON ) ) {
                     $n_updated++;
                 }
             }
@@ -106,5 +109,10 @@ class controller {
         $obj_bus = new modelposition();
         $array_markers = $obj_bus->get_array_markers();
         return \BUSaragon\common\map::create_map( $array_markers, 100, 800, true );
+    }
+
+    private function get_historic() {
+        $obj_historic = new modelhistoric();
+        return $obj_historic->get_historic( \BUSaragon\common\controller::get( 'bus_id' ) );
     }
 }

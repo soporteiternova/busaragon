@@ -160,6 +160,7 @@ class modelposition extends \BUSaragon\common\model {
                 'name' => $api_obj->assetName,
                 'registration' => $api_obj->assetRegistration,
                 'type' => $api_obj->assetType,
+                'network' => $api_endpoint,
             ];
         } else {
             $array_attr = [
@@ -270,7 +271,7 @@ class modelposition extends \BUSaragon\common\model {
                     'lng' => $lat_lng[ 1 ],
                     'title' => $obj->name,
                     'icon' => $server_url . '/img/bus_icon_' . ( $obj->network === \BUSaragon\common\controller::ENDOPOINT_BUS_VEHICLES_POSITION_ARAGON ? 'red' : 'green' ) . '.png',
-                    //'url' => $obj->network === \BUSaragon\common\controller::ENDPOINT_BUS_STOP_CTAZ ? $server_url . '/?&zone=bus_stop&action=get_remaining_time&bus_stop_id=' . $obj->code : '',
+                    'url' => ( !empty( $obj->code ) ? $server_url . '/?&zone=vehicles&action=get_historic&bus_id=' . $obj->code : '' ),
                 ];
             }
         }
