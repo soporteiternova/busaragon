@@ -174,7 +174,7 @@ class modeldistance extends \BUSaragon\common\model {
             if ( !empty( $array_obj ) ) {
                 $obj = reset( $array_obj );
                 if ( !empty( $obj->array_distance ) ) {
-                    $str_return = '<ul><li>' . end( $obj->array_distance ) . '</li></ul>';
+                    $str_return = '<ul><li>' . end( $obj->array_distance ) . ' km</li></ul>';
                 }
             }
         }
