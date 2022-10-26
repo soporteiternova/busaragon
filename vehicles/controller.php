@@ -142,7 +142,7 @@ class controller {
             $str .= '<b>&Uacute;ltimo destino:</b><br/>' . \BUSaragon\common\utils::detect_utf8( $str_historic );
         }
         if ( !empty( $str_distancie ) ) {
-            $str .= '<b>Distancia total recorrida:</b><br/>' . $str_distancie;
+            $str .= '<b>Distancia total recorrida:</b><br/>' . $str_distancie . ' km';
         }
 
         return $str;
