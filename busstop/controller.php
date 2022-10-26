@@ -40,6 +40,12 @@ class controller {
             case 'get_remaining_time':
                 return $this->remaining_time();
                 break;
+            case 'tab_listing':
+                return $this->tab_listing();
+                break;
+            case 'routes_listing':
+                return $this->routes_listing();
+                break;
             case 'listing':
             default:
                 return $this->listing();
@@ -83,9 +89,23 @@ class controller {
                     $bus_stop_times_obj->update_times_from_api( $obj );
                 }
             }
-
-            return true;
         }
+
+        // Routes
+        $array_endpoints = [ \BUSaragon\common\controller::ENDOPOINT_BUS_ROUTES_ARAGON, \BUSaragon\common\controller::ENDOPOINT_BUS_ROUTES_CTAZ ];
+        $bus_routes_obj = new modelroutes();
+
+        foreach ( $array_endpoints as $endpoint ) {
+            $api_url = \BUSaragon\common\controller::get_endpoint_url( $endpoint );
+            $array_objs = json_decode( file_get_contents( $api_url ) );
+            if ( !empty( $array_objs ) ) {
+                foreach ( $array_objs as $obj ) {
+                    $bus_routes_obj->update_from_api( $obj, $endpoint );
+                }
+            }
+            var_dump( 'Updated ' . count( $array_objs ) . ' routes for ' . $endpoint );
+        }
+        return true;
     }
 
     /**
@@ -96,6 +116,57 @@ class controller {
         $obj_busstop = new model();
         $array_markers = $obj_busstop->get_array_markers();
         return \BUSaragon\common\map::create_map( $array_markers, 100, 800, true );
+    }
+
+    /**
+     * Show tab listing with bus stop
+     * @return string
+     * @throws \Exception
+     */
+    private function tab_listing() {
+        $obj_busstop = new model();
+        $array_criteria[] = [ 'active', 'eq', true, 'bool' ];
+        $array_obj_busstop = $obj_busstop->get_all( $array_criteria );
+
+        $str_return = '<table class="default"><thead><tr><td>Localidad</td><td>Direcci&oacute;n</td></tr></thead><tbody>';
+        $array_data = [];
+        foreach ( $array_obj_busstop as $obj_busstop ) {
+            $array_data[ $obj_busstop->city ] = [ $obj_busstop->city, $obj_busstop->address ];
+        }
+        ksort( $array_data );
+        foreach ( $array_data as $data ) {
+            $str_return .= '<tr><td>' . $data[ 0 ] . '</td><td>' . $data[ 1 ] . '</td></tr>';
+        }
+        $str_return .= '</tbody></table';
+        return $str_return;
+    }
+
+    /**
+     * Shows routes tab listing
+     * @return string
+     * @throws \Exception
+     */
+    private function routes_listing() {
+        $obj_route = new modelroutes();
+        $array_criteria[] = [ 'active', 'eq', true, 'bool' ];
+        $array_obj_routes = $obj_route->get_all( $array_criteria );
+
+        $str_return = '<table class="default"><thead><tr><td>Ruta</td><td>Origen</td><td>Destino</td></tr></thead><tbody>';
+        $array_data = [];
+        foreach ( $array_obj_routes as $obj_route ) {
+            $array_data[ $obj_route->network . '_' . $obj_route->name ] = [ $obj_route->name, $obj_route->origin, $obj_route->destination, (int) $obj_route->network ];
+        }
+        ksort( $array_data );
+        $current_network = -1;
+        foreach ( $array_data as $data ) {
+            if ( $data[ 3 ] !== $current_network ) {
+                $str_return .= '<tr><td colspan="3" style="text-align: center;"><b>' . ( $data[ 3 ] === \BUSaragon\common\controller::ENDOPOINT_BUS_ROUTES_ARAGON ? 'GOBIERNO DE ARAG&Oacute;N' : 'CTAZ' ) . '</b></td></tr>';
+                $current_network = $data[ 3 ];
+            }
+            $str_return .= '<tr><td>' . $data[ 0 ] . '</td><td>' . $data[ 1 ] . '</td><td>' . $data[ 2 ] . '</td></tr>';
+        }
+        $str_return .= '</tbody></table';
+        return $str_return;
     }
 
     private function remaining_time() {

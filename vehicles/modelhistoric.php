@@ -225,7 +225,7 @@ class modelhistoric extends \BUSaragon\common\model {
                 $obj = reset( $array_obj );
                 if ( !empty( $obj->array_driver_name ) ) {
                     $str_return = '<ul><li>' . implode( '</li><li>', $obj->array_driver_name ) . '</li></ul>';
-                    var_dump( $str_return );
+                    // TODO var_dump( $str_return );
                 }
             }
         }

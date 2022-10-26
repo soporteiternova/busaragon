@@ -86,14 +86,16 @@ class controller {
             var_dump( 'Updated ' . $n_updated . ' positions for ' . $api_endpoint );
         }
 
-        // Loading historic traveling
-        $array_objs = json_decode( file_get_contents( \BUSaragon\common\controller::get_endpoint_url( \BUSaragon\common\controller::ENDOPOINT_BUS_VEHICLES_HISTORIC_ARAGON ) ) );
-        $n_updated = 0;
-        if ( !empty( $array_objs ) ) {
-            foreach ( $array_objs as $obj ) {
-                $obj_vehicle_position = new modelhistoric();
-                if ( $obj_vehicle_position->update_from_api( $obj, \BUSaragon\common\controller::ENDOPOINT_BUS_VEHICLES_HISTORIC_ARAGON ) ) {
-                    $n_updated++;
+        if ( $minute >= 5 && $minute <= 7 ) {
+            // Loading historic traveling
+            $array_objs = json_decode( file_get_contents( \BUSaragon\common\controller::get_endpoint_url( \BUSaragon\common\controller::ENDOPOINT_BUS_VEHICLES_HISTORIC_ARAGON ) ) );
+            $n_updated = 0;
+            if ( !empty( $array_objs ) ) {
+                foreach ( $array_objs as $obj ) {
+                    $obj_vehicle_position = new modelhistoric();
+                    if ( $obj_vehicle_position->update_from_api( $obj, \BUSaragon\common\controller::ENDOPOINT_BUS_VEHICLES_HISTORIC_ARAGON ) ) {
+                        $n_updated++;
+                    }
                 }
             }
         }

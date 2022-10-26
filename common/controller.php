@@ -34,6 +34,8 @@ class controller {
     const ENDOPOINT_BUS_VEHICLES_POSITION_CTAZ = 6;
     const ENDOPOINT_BUS_VEHICLES_HISTORIC_ARAGON = 7;
     const ENDOPOINT_BUS_VEHICLES_DISTANCE_ARAGON = 8;
+    const ENDOPOINT_BUS_ROUTES_ARAGON = 9;
+    const ENDOPOINT_BUS_ROUTES_CTAZ = 10;
 
     /**
      * Funcion para mostrar la cabecera html
@@ -128,10 +130,10 @@ class controller {
     
                 <!-- Header -->
                 <header id="header">
-                    <h1 id="logo"><a href="index.html">BUS <span>Arag&oacute;n</span></a></h1>
+                    <h1 id="logo"><a href="index.php">BUS <span>Arag&oacute;n</span></a></h1>
                     <nav id="nav">
                         <ul>
-                            <li class="' . $class_start . '"><a href="index.html">Inicio</a></li>
+                            <li class="' . $class_start . '"><a href="index.php">Inicio</a></li>
                             <li class="submenu ' . $class_map . '">
                                 <a href="#">Visualizaci&oacute;n sobre mapa</a>
                                 <ul>
@@ -142,7 +144,7 @@ class controller {
                             <li class="submenu ' . $class_routes . '">
                                 <a href="#">Informaci&oacute;n sobre veh&iacute;culos</a>
                                 <ul>
-                                    <li><a href="left-sidebar.html">Listado de rutas</a></li>
+                                    <li><a href="?&amp;zone=routes&amp;action=routes_listing">Listado de rutas</a></li>
                                     <li><a href="right-sidebar.html">B&uacute;squeda de paradas</a></li>
                                     <li><a href="right-sidebar.html">B&uacute;squeda municipios</a></li>
                                 </ul>
@@ -157,7 +159,7 @@ class controller {
                     <header class="special container">
                         <span class="icon solid fa-mobile-alt"></span>
                         <h2>BUS <strong>Arag&oacute;n </strong ></h2 >
-                        <p>Toda la informac&ioacute;n del transporte p&uacute;blico interurbano de viajeros por carretera en Arag&oacute;n a un click.</p>
+                        <p>Toda la informac&oacute;n del transporte p&uacute;blico interurbano de viajeros por carretera en Arag&oacute;n a un click.</p>
                     </header >
 
                     <!--One -->
@@ -168,6 +170,7 @@ class controller {
 
         switch ( controller::get( 'zone' ) ) {
             case 'bus_stop':
+            case 'routes':
                 $controller = new \BUSaragon\busstop\controller();
                 $str .= $controller->actions();
                 break;
@@ -176,15 +179,6 @@ class controller {
                 $str .= $controller->actions();
             default:
         }
-        /*<section >
-            <a href = "#" class="image featured" ><img src = "img/pic04.jpg" alt = "" /></a >
-            <header >
-                <h3 > Dolore Amet Consequat </h3 >
-            </header >
-            <p > Aliquam massa urna, imperdiet sit amet mi non, bibendum euismod est . Curabitur mi justo, tincidunt vel eros ullamcorper, porta cursus justo . Cras vel neque eros . Vestibulum diam quam, mollis at consectetur non, malesuada quis augue . Morbi tincidunt pretium interdum . Morbi mattis elementum orci, nec dictum massa . Morbi eu faucibus massa . Aliquam massa urna, imperdiet sit amet mi non, bibendum euismod est . Curabitur mi justo, tincidunt vel eros ullamcorper, porta cursus justo . Cras vel neque eros . Vestibulum diam .</p >
-            <p > Vestibulum diam quam, mollis at consectetur non, malesuada quis augue . Morbi tincidunt pretium interdum . Morbi mattis elementum orci, nec dictum porta cursus justo . Quisque ultricies lorem in ligula condimentum, et egestas turpis sagittis . Cras ac nunc urna . Nullam eget lobortis purus . Phasellus vitae tortor non est placerat tristique . Sed id sem et massa ornare pellentesque . Maecenas pharetra porta accumsan . </p >
-            <p > In vestibulum massa quis arcu lobortis tempus . Nam pretium arcu in odio vulputate luctus . Suspendisse euismod lorem eget lacinia fringilla . Sed sed felis justo . Nunc sodales elit in laoreet aliquam . Nam gravida, nisl sit amet iaculis porttitor, risus nisi rutrum metus, non hendrerit ipsum arcu tristique est .</p >
-        </section >*/
         $str .= '        </div >
 
                     </section >
@@ -250,6 +244,12 @@ class controller {
                 break;
             case self::ENDOPOINT_BUS_VEHICLES_DISTANCE_ARAGON:
                 $url = 'https://opendata.aragon.es/GA_OD_Core/download?resource_id=2185&formato=json';
+                break;
+            case self::ENDOPOINT_BUS_ROUTES_ARAGON:
+                $url = 'https://opendata.aragon.es/GA_OD_Core/download?view_id=151&formato=json';
+                break;
+            case self::ENDOPOINT_BUS_ROUTES_CTAZ:
+                $url = 'https://opendata.aragon.es/GA_OD_Core/download?resource_id=2188&formato=json';
                 break;
         }
         return $url;
