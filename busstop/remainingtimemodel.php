@@ -171,14 +171,14 @@ class remainingtimemodel extends \BUSaragon\common\model {
 
         $str_return = '';
         foreach ( $this->times as $line_id => $routes ) {
-            $str_return .= '<table><th><td<b>' . $this->lines[ $line_id ] . '</b></td></th>';
+            $str_return .= '<div style="max-height: 200px;overflow: scroll;"><table class="default"><thead><td>' . $this->lines[ $line_id ] . '</td></thead><tbody>';
             foreach ( $routes as $route_id => $times ) {
                 $str_return .= '<tr><td>' . $this->routes[ $line_id ][ $route_id ] . '</td></tr>';
                 if ( !empty( $this->times[ $line_id ][ $route_id ] ) ) {
                     $str_return .= '<tr><td>' . implode( '</td></tr><tr><td>', $times );
                 }
             }
-            $str_return .= '</table>';
+            $str_return .= '</tbody></table></div>';
         }
 
         return $str_return;

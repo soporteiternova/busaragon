@@ -76,30 +76,29 @@ class controller {
                     }
                 }
             }
+        }
 
-            // Remaining times for CTAZ bus stop
-            set_time_limit( 120 );
-            $api_url = \BUSaragon\common\controller::get_endpoint_url( \BUSaragon\common\controller::ENDPOINT_BUS_STOP_REMAINING_TIMES_CTAZ );
-            $array_objs = json_decode( file_get_contents( $api_url ) );
+        // Remaining times for CTAZ bus stop
+        set_time_limit( 120 );
+        $api_url = \BUSaragon\common\controller::get_endpoint_url( \BUSaragon\common\controller::ENDPOINT_BUS_STOP_REMAINING_TIMES_CTAZ );
+        $array_objs = json_decode( file_get_contents( $api_url ) );
 
-            $bus_stop_times_obj = new remainingtimemodel();
-
-            if ( !empty( $array_objs ) ) {
-                foreach ( $array_objs as $obj ) {
-                    $bus_stop_times_obj->update_times_from_api( $obj );
-                }
+        if ( !empty( $array_objs ) ) {
+            foreach ( $array_objs as $obj ) {
+                $bus_stop_times_obj = new remainingtimemodel();
+                $bus_stop_times_obj->update_times_from_api( $obj );
             }
         }
 
         // Routes
         $array_endpoints = [ \BUSaragon\common\controller::ENDOPOINT_BUS_ROUTES_ARAGON, \BUSaragon\common\controller::ENDOPOINT_BUS_ROUTES_CTAZ ];
-        $bus_routes_obj = new modelroutes();
 
         foreach ( $array_endpoints as $endpoint ) {
             $api_url = \BUSaragon\common\controller::get_endpoint_url( $endpoint );
             $array_objs = json_decode( file_get_contents( $api_url ) );
             if ( !empty( $array_objs ) ) {
                 foreach ( $array_objs as $obj ) {
+                    $bus_routes_obj = new modelroutes();
                     $bus_routes_obj->update_from_api( $obj, $endpoint );
                 }
             }

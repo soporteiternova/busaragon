@@ -269,9 +269,9 @@ class modelposition extends \BUSaragon\common\model {
                     'id' => $obj->_id,
                     'lat' => $lat_lng[ 0 ],
                     'lng' => $lat_lng[ 1 ],
-                    'title' => $obj->name,
+                    'title' => 'BUS ' . $obj->name,
                     'icon' => $server_url . '/img/bus_icon_' . ( $obj->network === \BUSaragon\common\controller::ENDOPOINT_BUS_VEHICLES_POSITION_ARAGON ? 'red' : 'green' ) . '.png',
-                    'url' => ( !empty( $obj->code ) ? $server_url . '/?&zone=vehicles&action=get_historic&bus_id=' . $obj->code : '' ),
+                    'url' => ( !empty( $obj->code ) && $obj->network === \BUSaragon\common\controller::ENDOPOINT_BUS_VEHICLES_POSITION_ARAGON ? $server_url . '/?&zone=vehicles&action=get_historic&bus_id=' . $obj->code : '' ),
                 ];
             }
         }

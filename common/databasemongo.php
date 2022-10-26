@@ -564,4 +564,24 @@ class databasemongo {
             die( 'SELECT' );
         }
     }
+
+    /**
+     * Realiza busqueda en la coleccion, en funcion de los parametros introducidos. Equivalente a MongoCollection::findOne() de PHP::MongoDB
+     * @link http://www.php.net/manual/en/mongocollection.find.php
+     *
+     * @param string $collection Nombre de la coleccion de la base de datos en la que se eliminaran objetos
+     * @param string $_id Identificador del objeto a buscar
+     *
+     * @return array Objeto (en formato array). Requiere hacer cast del array resultante para convertilo en objeto
+     * @throws \Exception
+     */
+    public function select_by_id( $collection, $_id ) {
+        try {
+            // Buscamos y devolvemos el objeto
+            return ( ( is_numeric( $_id ) && strlen( (string) $_id ) < 11 ) ? null : $this->database->{$collection}->findOne( [ '_id' => self::mongoIdVal( $_id ) ] ) );
+        } catch ( MongoDB\Driver\Exception $e ) {
+            print_r( 'ERROR MongoDB (select_by_id): ' . $e->getMessage() . $collection, [ '_id' => (string) $_id ] );
+            die( print_r( 'SELECT_ID' ) );
+        }
+    }
 }

@@ -134,7 +134,7 @@ class model extends \BUSaragon\common\model {
         foreach ( $array_string as $key ) {
             $this->{$key} = (string) \call_user_func( $callback_function, $this->{$key} );
         }
-        if ( !emtpy( $this->lat_lng ) ) {
+        if ( !empty( $this->lat_lng ) ) {
             $this->lat_lng = [ (float) $this->lat_lng[ 0 ], (float) $this->lat_lng[ 1 ] ];
         }
 
@@ -171,5 +171,24 @@ class model extends \BUSaragon\common\model {
         }
 
         return $array_return;
+    }
+
+    /**
+     * Gets vehicle object by code
+     *
+     * @param $bus_id
+     *
+     * @return void
+     */
+    public function select_by_code( $bus_id ) {
+        $obj = $this;
+        $array_criteria[] = [ 'code', 'eq', $bus_id, 'string' ];
+        $array_obj = $this->get_all( $array_criteria, [], 0, 1 );
+
+        if ( !empty( $array_obj ) ) {
+            $obj = reset( $array_obj );
+        }
+
+        return $obj;
     }
 }

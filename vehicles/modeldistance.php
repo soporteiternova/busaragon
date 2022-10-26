@@ -14,7 +14,7 @@
  */
 
 /**
- * Vehicle historical data model
+ * Vehicle traveled distance data model
  * @author ITERNOVA (info@iternova.net)
  * @version 1.0.0 - 20221001
  * @package vehicles
@@ -24,31 +24,17 @@
 
 namespace BUSaragon\vehicles;
 
-class modelhistoric extends \BUSaragon\common\model {
-    public $_database_collection = 'vehicles_historic';
+class modeldistance extends \BUSaragon\common\model {
+    public $_database_collection = 'vehicles_distance';
     public $date = '';
 
     public $code = '';
     public $name = '';
     public $registration = 0;
     public $group = '';
+    public $odometer_type = '';
 
-    public $array_date = [];
-    public $array_speed = [];
-    public $array_latlng = [];
-    public $array_formatted_address = [];
-    public $array_heading = [];
-    public $array_status = [];
-    public $array_driver_id = [];
-    public $array_driver_name = [];
-    public $array_driver_group_name = [];
-
-    public $array_cumulative_distance = [];
-    public $array_cumulative_fuel_usage = [];
-    public $array_cumulative_idle_time = [];
-    public $array_cumulative_pto_time = [];
-    public $array_cumulative_runtime = [];
-    public $array_cumulative_runtime_type = [];
+    public $array_distance = [];
     public $network = -1;
 
     /**
@@ -63,10 +49,8 @@ class modelhistoric extends \BUSaragon\common\model {
         $this->_id = null;
         $ret = false;
 
-        if ( $api_endpoint === \BUSaragon\common\controller::ENDOPOINT_BUS_VEHICLES_HISTORIC_ARAGON ) {
-            $date = date( 'Y-m-d', strtotime( $api_object->eventDate ) );
-            $array_criteria[] = [ 'date', 'eq', $date, 'string' ];
-            $array_criteria[] = [ 'code', 'eq', $api_object->vehicleId, 'string' ];
+        if ( $api_endpoint === \BUSaragon\common\controller::ENDOPOINT_BUS_VEHICLES_DISTANCE_ARAGON ) {
+            $array_criteria[] = [ 'code', 'eq', $api_object->assetId, 'string' ];
             $array_criteria[] = [ 'network', 'eq', $api_endpoint, 'int' ];
 
             $array_obj = $this->get_all( $array_criteria, [], 0, 1 );
@@ -76,32 +60,17 @@ class modelhistoric extends \BUSaragon\common\model {
                 $this->_id = $saved_obj->_id;
                 $this->set( $saved_obj );
             } else {
-                $this->set_attr_from_api( $api_object, $date, $api_endpoint );
-            }
-            $array_attr = [
-                'eventDate' => 'array_date',
-                'cumulativeDistance' => 'array_cumulative_distance',
-                'cumulativeFuelUsage' => 'array_cumulative_fuel_usage',
-                'cumulativeIdleTime' => 'array_cumulative_idle_time',
-                'cumulativePtoTime' => 'array_cumulative_pto_time',
-                'cumulativeRuntime' => 'array_cumulative_runtime',
-                'driverGroupName' => 'array_driver_group_name',
-                'driverId' => 'array_driver_id',
-                'driverName' => 'array_driver_name',
-                'eventStatus' => 'array_status',
-                'formattedAddress' => 'array_formatted_address',
-                'heading' => 'array_heading',
-                'speed' => 'array_speed',
-            ];
-
-            foreach ( $array_attr as $api_attr => $obj_attr ) {
-                $this->{$obj_attr}[] = $api_object->{$api_attr};
+                $this->set_attr_from_api( $api_object, $api_endpoint );
             }
 
-            $this->array_latlng[] = [ $api_object->latitude, $api_object->longitude ];
+            if ( array_search( $api_object->distance, $this->array_distance ) === false ) {
+                $this->array_distance[] = $api_object->distance;
+                sort( $this->array_distance );
+                $ret = $this->store();
+            }
         }
 
-        return $this->store();
+        return $ret;
     }
 
     /**
@@ -112,16 +81,16 @@ class modelhistoric extends \BUSaragon\common\model {
      *
      * @return boolean
      */
-    private function set_attr_from_api( $api_obj, $date, $api_endpoint ) {
+    private function set_attr_from_api( $api_obj, $api_endpoint ) {
         $array_attr = [];
-        if ( $api_endpoint === \BUSaragon\common\controller::ENDOPOINT_BUS_VEHICLES_HISTORIC_ARAGON ) {
+        if ( $api_endpoint === \BUSaragon\common\controller::ENDOPOINT_BUS_VEHICLES_DISTANCE_ARAGON ) {
             $array_attr = [
-                'date' => $date,
-                'group' => $api_obj->vehicleGroupName,
-                'code' => $api_obj->vehicleId,
-                'name' => $api_obj->vehicleName,
-                'registration' => $api_obj->vehicleRegistration,
+                'group' => $api_obj->groupName,
+                'code' => $api_obj->assetId,
+                'name' => $api_obj->assetName,
+                'registration' => $api_obj->assetRegistration,
                 'network' => $api_endpoint,
+                'odometer_type' => $api_obj->odometerType,
             ];
         }
         foreach ( $array_attr as $attr => $value ) {
@@ -137,10 +106,8 @@ class modelhistoric extends \BUSaragon\common\model {
      */
     protected function ensureIndex() {
         $array_indexes = [
-            [ 'date' => 1 ],
             [ 'code' => 1 ],
             [ 'name' => 1 ],
-            [ 'lat_lng' => '2d' ],
         ];
         foreach ( $array_indexes as $index ) {
             $this->_database_controller->ensureIndex( $this->_database_collection, $index );
@@ -163,43 +130,25 @@ class modelhistoric extends \BUSaragon\common\model {
         foreach ( $array_fields_datetime as $key ) {
             $this->{$key} = \BUSaragon\common\databasemongo::datetime_mongodate( $this->{$key}, $to_utf8, false );
         }
-        foreach ( $this->array_date as $key => $value ) {
-            $this->array_date[ $key ] = \BUSaragon\common\databasemongo::datetime_mongodate( $value, $to_utf8, false );
-        }
 
         // Common attributes: integer
         $array_integer = [ 'registration', 'network' ];
         foreach ( $array_integer as $key ) {
             $this->{$key} = (integer) $this->{$key};
         }
-        $array_integer = [ 'array_cumulative_idle_time', 'array_cumulative_pto_time', 'array_cumulative_runtime' ];
-        foreach ( $array_integer as $attr ) {
-            foreach ( $this->{$attr} as $key => $value ) {
-                $this->{$attr}[ $key ] = (int) $value;
-            }
-        }
 
         // Common attributes: float
-        $array_float = [ 'array_cumulative_distance', 'array_cumulative_fuel_usage', 'array_speed', 'array_heading' ];
+        $array_float = [ 'array_distance' ];
         foreach ( $array_float as $attr ) {
             foreach ( $this->{$attr} as $key => $value ) {
                 $this->{$attr}[ $key ] = (float) $value;
             }
         }
-        foreach ( $this->array_latlng as $key => $latlng ) {
-            $this->array_latlng[ $key ] = [ (float) $latlng[ 0 ], (float) $latlng[ 1 ] ];
-        }
 
         // Common attributes: string
-        $array_string = [ 'date', 'group', 'code', 'name' ];
+        $array_string = [ 'group', 'code', 'name', 'odometer_type' ];
         foreach ( $array_string as $key ) {
             $this->{$key} = (string) \call_user_func( $callback_function, $this->{$key} );
-        }
-        $array_string = [ 'array_formatted_address', 'array_status', 'array_driver_group_name', 'array_driver_id', 'array_driver_name', 'array_cumulative_runtime_type' ];
-        foreach ( $array_string as $attr ) {
-            foreach ( $this->{$attr} as $key => $value ) {
-                $this->{$attr}[ $key ] = (string) \call_user_func( $callback_function, $value );
-            }
         }
 
         // Common attributes: booleans
@@ -210,23 +159,22 @@ class modelhistoric extends \BUSaragon\common\model {
     }
 
     /**
+     * Returns string with last distance for a given bus
+     *
      * @param $bus_id
      *
      * @return string
      */
-    public function get_historic( $bus_id ) {
+    public function get_distance( $bus_id ) {
         $str_return = '';
         if ( !empty( $bus_id ) ) {
             $array_criteria[] = [ 'code', 'eq', $bus_id, 'string' ];
             $array_criteria[] = [ 'active', 'eq', true, 'bool' ];
-            $array_sort = [ 'date' => -1 ];
-            $array_obj = $this->get_all( $array_criteria, $array_sort, 0, 1 );
-
+            $array_obj = $this->get_all( $array_criteria, [], 0, 1 );
             if ( !empty( $array_obj ) ) {
                 $obj = reset( $array_obj );
-                if ( !empty( $obj->array_driver_name ) ) {
-                    $str_return = '<ul><li>' . implode( '</li><li>', $obj->array_driver_name ) . '</li></ul>';
-                    // TODO var_dump( $str_return );
+                if ( !empty( $obj->array_distance ) ) {
+                    $str_return = '<ul><li>' . end( $obj->array_distance ) . '</li></ul>';
                 }
             }
         }

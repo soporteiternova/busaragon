@@ -47,7 +47,7 @@ class map {
         $str = '';
 
         // JS googlemaps
-        $str .= '<script type="text/javascript" src="https://maps.google.com/maps/api/js?key=' . self::google_key() . '"></script>';
+        $str .= '<script type="text/javascript" src="https://maps.google.com/maps/api/js?key=' . self::google_key() . '" async defer></script>';
         $rand = rand();
         // Generamos el mapa
         $str .= "<script type=\"text/javascript\">
@@ -64,7 +64,7 @@ class map {
                 $marker[ 'title' ] = str_replace( "'", "\'", $marker[ 'title' ] );
 
                 $str .= " 			var contentString" . $marker[ 'id' ] . "='';		
-                                    var opened_infowindow=null;
+                                    //var opened_infowindow=null;
                  					var marker_" . $marker[ 'id' ] . " = new google.maps.Marker({
                                                                         position:{lat:" . $marker[ 'lat' ] . ",lng:" . $marker[ 'lng' ] . "},
                                                                         title:'" . $marker[ 'title' ] . "',";
@@ -93,7 +93,8 @@ class map {
                 if ( isset( $marker[ 'url' ] ) && !empty( $marker[ 'url' ] ) ) {
                     $str .= "                                                $('#content_infowindow_" . $marker[ 'id' ] . "').load('" . $marker[ 'url' ] . "');";
                 }
-                $str .= "                     if(opened_infowindow!==null)opened_infowindow.close();opened_infowindow=infowindow_" . $marker[ 'id' ] . "});";
+                //$str .= "                     if(opened_infowindow!==null)opened_infowindow.close();opened_infowindow=infowindow_" . $marker[ 'id' ];
+                $str .= "});";
             }
         }
 

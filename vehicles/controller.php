@@ -92,13 +92,27 @@ class controller {
             $n_updated = 0;
             if ( !empty( $array_objs ) ) {
                 foreach ( $array_objs as $obj ) {
-                    $obj_vehicle_position = new modelhistoric();
-                    if ( $obj_vehicle_position->update_from_api( $obj, \BUSaragon\common\controller::ENDOPOINT_BUS_VEHICLES_HISTORIC_ARAGON ) ) {
+                    $obj_vehicle_historic = new modelhistoric();
+                    if ( $obj_vehicle_historic->update_from_api( $obj, \BUSaragon\common\controller::ENDOPOINT_BUS_VEHICLES_HISTORIC_ARAGON ) ) {
                         $n_updated++;
                     }
                 }
             }
+            var_dump( 'Updated ' . $n_updated . ' historic for Aragon' );
         }
+
+        // Loading traveled distance
+        $array_objs = json_decode( file_get_contents( \BUSaragon\common\controller::get_endpoint_url( \BUSaragon\common\controller::ENDOPOINT_BUS_VEHICLES_DISTANCE_ARAGON ) ) );
+        $n_updated = 0;
+        if ( !empty( $array_objs ) ) {
+            foreach ( $array_objs as $obj ) {
+                $obj_vehicle_distance = new modeldistance();
+                if ( $obj_vehicle_distance->update_from_api( $obj, \BUSaragon\common\controller::ENDOPOINT_BUS_VEHICLES_DISTANCE_ARAGON ) ) {
+                    $n_updated++;
+                }
+            }
+        }
+        var_dump( 'Updated ' . $n_updated . ' distance for Aragon' );
 
         return true;
     }
@@ -109,12 +123,28 @@ class controller {
      */
     private function listing() {
         $obj_bus = new modelposition();
-        $array_markers = $obj_bus->get_array_markers();
+        $array_criteria[] = [ 'date', 'eq', date( 'Y-m-d' ), 'string' ];
+        $array_markers = $obj_bus->get_array_markers( $array_criteria );
         return \BUSaragon\common\map::create_map( $array_markers, 100, 800, true );
     }
 
     private function get_historic() {
         $obj_historic = new modelhistoric();
-        return $obj_historic->get_historic( \BUSaragon\common\controller::get( 'bus_id' ) );
+        $obj_distance = new modeldistance();
+        $bus_id = \BUSaragon\common\controller::get( 'bus_id' );
+        $obj_bus = new model();
+        $obj_bus = $obj_bus->select_by_code( $bus_id );
+
+        $str = '<h2>' . $obj_bus->name . '</h2>';
+        $str_historic = $obj_historic->get_historic( $bus_id );
+        $str_distancie = $obj_distance->get_distance( $bus_id );
+        if ( !empty( $str_historic ) ) {
+            $str .= '<b>&Uacute;ltimo destino:</b><br/>' . $str_historic;
+        }
+        if ( !empty( $str_distancie ) ) {
+            $str .= '<b>Distancia total recorrida:</b><br/>' . $str_distancie;
+        }
+
+        return $str;
     }
 }
