@@ -135,7 +135,7 @@ class controller {
         }
         ksort( $array_data );
         foreach ( $array_data as $data ) {
-            $str_return .= '<tr><td>' . $data[ 0 ] . '</td><td>' . $data[ 1 ] . '</td></tr>';
+            $str_return .= '<tr><td>' . \BUSaragon\common\utils::detect_utf8( $data[ 0 ] ) . '</td><td>' . \BUSaragon\common\utils::detect_utf8( $data[ 1 ] ) . '</td></tr>';
         }
         $str_return .= '</tbody></table';
         return $str_return;

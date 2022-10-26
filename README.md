@@ -4,6 +4,8 @@ Aplicación para el acceso a toda la información disponible en OpenData del Gob
 
 ## Crondaemon
 
-Para ejecutar de forma manual las funciones de actualización de datos, se pueden usar las siguientes URL:
+Se debe configurar la siguiente orden en crontab para poder cargar los datos de la aplicación de forma automática:
 
-* Actualización de listado de paradas de autobús: index.php?&zone=bus_stop&action=crondaemon
+* `* * * * * php path_to_prorject/common/crondaemon.php`
+
+Donde path_to_prorject será el directorio de instalación.
