@@ -145,7 +145,7 @@ class controller {
                                 <a href="#">Informaci&oacute;n sobre veh&iacute;culos</a>
                                 <ul>
                                     <li><a href="?&amp;zone=routes&amp;action=routes_listing">Listado de rutas</a></li>
-                                    <li><a href="right-sidebar.html">B&uacute;squeda de paradas</a></li>
+                                    <li><a href="?&amp;zone=foutes&amp;action=tab_listing">B&uacute;squeda de paradas</a></li>
                                     <li><a href="right-sidebar.html">B&uacute;squeda municipios</a></li>
                                 </ul>
                             </li>
