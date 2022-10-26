@@ -99,20 +99,20 @@ class controller {
                 }
             }
             var_dump( 'Updated ' . $n_updated . ' historic for Aragon' );
-        }
 
-        // Loading traveled distance
-        $array_objs = json_decode( file_get_contents( \BUSaragon\common\controller::get_endpoint_url( \BUSaragon\common\controller::ENDOPOINT_BUS_VEHICLES_DISTANCE_ARAGON ) ) );
-        $n_updated = 0;
-        if ( !empty( $array_objs ) ) {
-            foreach ( $array_objs as $obj ) {
-                $obj_vehicle_distance = new modeldistance();
-                if ( $obj_vehicle_distance->update_from_api( $obj, \BUSaragon\common\controller::ENDOPOINT_BUS_VEHICLES_DISTANCE_ARAGON ) ) {
-                    $n_updated++;
+            // Loading traveled distance
+            $array_objs = json_decode( file_get_contents( \BUSaragon\common\controller::get_endpoint_url( \BUSaragon\common\controller::ENDOPOINT_BUS_VEHICLES_DISTANCE_ARAGON ) ) );
+            $n_updated = 0;
+            if ( !empty( $array_objs ) ) {
+                foreach ( $array_objs as $obj ) {
+                    $obj_vehicle_distance = new modeldistance();
+                    if ( $obj_vehicle_distance->update_from_api( $obj, \BUSaragon\common\controller::ENDOPOINT_BUS_VEHICLES_DISTANCE_ARAGON ) ) {
+                        $n_updated++;
+                    }
                 }
             }
+            var_dump( 'Updated ' . $n_updated . ' distance for Aragon' );
         }
-        var_dump( 'Updated ' . $n_updated . ' distance for Aragon' );
 
         return true;
     }
@@ -139,7 +139,7 @@ class controller {
         $str_historic = $obj_historic->get_historic( $bus_id );
         $str_distancie = $obj_distance->get_distance( $bus_id );
         if ( !empty( $str_historic ) ) {
-            $str .= '<b>&Uacute;ltimo destino:</b><br/>' . $str_historic;
+            $str .= '<b>&Uacute;ltimo destino:</b><br/>' . \BUSaragon\common\utils::detect_utf8( $str_historic );
         }
         if ( !empty( $str_distancie ) ) {
             $str .= '<b>Distancia total recorrida:</b><br/>' . $str_distancie;
