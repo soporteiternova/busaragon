@@ -59,10 +59,10 @@ class controller {
         if ( $minute >= 0 && $minute <= 5 ) {
             $api_url = \BUSaragon\common\controller::get_endpoint_url( \BUSaragon\common\controller::ENDOPOINT_BUS_VEHICLES_ARAGON );
             $array_objs = json_decode( file_get_contents( $api_url ) );
-            $obj_vehicle = new model();
 
             if ( !empty( $array_objs ) ) {
                 foreach ( $array_objs as $obj ) {
+                    $obj_vehicle = new model();
                     $obj_vehicle->update_from_api( $obj );
                 }
             }
