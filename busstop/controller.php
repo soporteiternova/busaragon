@@ -143,16 +143,29 @@ class controller {
         $array_criteria[] = [ 'active', 'eq', true, 'bool' ];
         $array_obj_busstop = $obj_busstop->get_all( $array_criteria );
 
-        $str_return = '<table class="default"><thead><tr><td>Localidad</td><td>Direcci&oacute;n</td></tr></thead><tbody>';
         $array_data = [];
         foreach ( $array_obj_busstop as $obj_busstop ) {
-            $array_data[ $obj_busstop->city ] = [ $obj_busstop->city, $obj_busstop->address ];
+            $array_data[] = [ 'city' => $obj_busstop->city, 'address' => $obj_busstop->address ];
         }
-        ksort( $array_data );
-        foreach ( $array_data as $data ) {
-            $str_return .= '<tr><td>' . \BUSaragon\common\utils::detect_utf8( $data[ 0 ] ) . '</td><td>' . \BUSaragon\common\utils::detect_utf8( $data[ 1 ] ) . '</td></tr>';
-        }
-        $str_return .= '</tbody></table';
+
+        $str_return = \Jupitern\Table\Table::instance()
+                                           ->setData( $array_data )
+                                           ->attr( 'table', 'id', 'busstop_table' )
+                                           ->attr( 'table', 'class', 'default' )
+                                           ->column()
+                                           ->title( 'Localidad' )
+                                           ->value( 'city' )
+                                           ->add()
+                                           ->column()
+                                           ->title( 'Direcc&oacute;n' )
+                                           ->value( 'address' )
+                                           ->add()
+                                           ->render( true );
+        $str_return .= "<script type=\"text/javascript\">
+                            \$(document).ready( function () {
+                                \$('#busstop_table').DataTable();
+                            });
+                        </script>";
         return $str_return;
     }
 
@@ -167,12 +180,10 @@ class controller {
         $array_obj_routes = $obj_route->get_all( $array_criteria );
 
         $array_network = [ \BUSaragon\common\controller::ENDOPOINT_BUS_ROUTES_ARAGON => 'Arag&oacute;n', \BUSaragon\common\controller::ENDOPOINT_BUS_ROUTES_CTAZ => 'CTAZ' ];
-        $str_return = '<table class="default"><thead><tr><td>Ruta</td><td>Origen</td><td>Destino</td></tr></thead><tbody>';
         $array_data = [];
         foreach ( $array_obj_routes as $obj_route ) {
-            $array_data[ $obj_route->network . '_' . $obj_route->name ] = [ 'name' => $obj_route->name, 'origin' => $obj_route->origin, 'destination' => $obj_route->destination, 'network' => $array_network[ (int) $obj_route->network ] ];
+            $array_data[] = [ 'name' => $obj_route->name, 'origin' => $obj_route->origin, 'destination' => $obj_route->destination, 'network' => $array_network[ (int) $obj_route->network ] ];
         }
-        ksort( $array_data );
 
         $str_return = \Jupitern\Table\Table::instance()
                                            ->setData( $array_data )
