@@ -103,8 +103,7 @@ class modelroutes extends \BUSaragon\common\model {
      * @return void
      */
     public function object_encode_data( $to_utf8 = false ) {
-        $callback_function = \BUSaragon\common\utils::class . ( $to_utf8 ? '::detect_utf8' : '::detect_iso8859_1' );
-        $to_utf8 = true;
+        $callback_function = \BUSaragon\common\utils::class . ( $to_utf8 ? '::detect_utf8' : '::detect_utf8' );
 
         // Dates (format \MongoDate en UTC+0)
         $array_fields_datetime = [ 'updated_at', 'created_at' ];
