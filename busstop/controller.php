@@ -94,6 +94,19 @@ class controller {
                 }
                 var_dump( 'Updated ' . count( $array_objs ) . ' routes for ' . $endpoint );
             }
+
+            // Cities
+            $endpoint = \BUSaragon\common\controller::ENDOPOINT_BUS_CITIES_CTAZ;
+            $api_url = \BUSaragon\common\controller::get_endpoint_url( $endpoint );
+            $array_objs = json_decode( file_get_contents( $api_url ) );
+
+            if ( !empty( $array_objs ) ) {
+                foreach ( $array_objs as $obj ) {
+                    $cities_model = new modelcities();
+                    $cities_model->update_from_api( $obj, $endpoint );
+                }
+                var_dump( 'Updated ' . count( $array_objs ) . ' cities' );
+            }
         }
 
         // Remaining times for CTAZ bus stop
@@ -108,17 +121,17 @@ class controller {
             }
         }
 
-        // Cities
-        $endpoint = \BUSaragon\common\controller::ENDOPOINT_BUS_CITIES_CTAZ;
+        // Cities destination
+        $endpoint = \BUSaragon\common\controller::ENDOPOINT_BUS_CITIES_DESTINATION_CTAZ;
         $api_url = \BUSaragon\common\controller::get_endpoint_url( $endpoint );
         $array_objs = json_decode( file_get_contents( $api_url ) );
 
         if ( !empty( $array_objs ) ) {
             foreach ( $array_objs as $obj ) {
-                $cities_model = new modelcities();
-                $cities_model->update_from_api( $obj, $endpoint );
+                $cities_destination_model = new modeldestinations();
+                $cities_destination_model->update_from_api( $obj, $endpoint );
             }
-            var_dump( 'Updated ' . count( $array_objs ) . ' cities' );
+            var_dump( 'Updated ' . count( $array_objs ) . ' cities destinations' );
         }
         return true;
     }
