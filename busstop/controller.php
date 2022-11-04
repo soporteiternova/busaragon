@@ -107,6 +107,19 @@ class controller {
                 }
                 var_dump( 'Updated ' . count( $array_objs ) . ' cities' );
             }
+
+            // Cities destination
+            $endpoint = \BUSaragon\common\controller::ENDOPOINT_BUS_CITIES_DESTINATION_CTAZ;
+            $api_url = \BUSaragon\common\controller::get_endpoint_url( $endpoint );
+            $array_objs = json_decode( file_get_contents( $api_url ) );
+
+            if ( !empty( $array_objs ) ) {
+                foreach ( $array_objs as $obj ) {
+                    $cities_destination_model = new modeldestinations();
+                    $cities_destination_model->update_from_api( $obj, $endpoint );
+                }
+                var_dump( 'Updated ' . count( $array_objs ) . ' cities destinations' );
+            }
         }
 
         // Remaining times for CTAZ bus stop
@@ -119,19 +132,6 @@ class controller {
                 $bus_stop_times_obj = new remainingtimemodel();
                 $bus_stop_times_obj->update_times_from_api( $obj );
             }
-        }
-
-        // Cities destination
-        $endpoint = \BUSaragon\common\controller::ENDOPOINT_BUS_CITIES_DESTINATION_CTAZ;
-        $api_url = \BUSaragon\common\controller::get_endpoint_url( $endpoint );
-        $array_objs = json_decode( file_get_contents( $api_url ) );
-
-        if ( !empty( $array_objs ) ) {
-            foreach ( $array_objs as $obj ) {
-                $cities_destination_model = new modeldestinations();
-                $cities_destination_model->update_from_api( $obj, $endpoint );
-            }
-            var_dump( 'Updated ' . count( $array_objs ) . ' cities destinations' );
         }
         return true;
     }
