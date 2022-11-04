@@ -166,21 +166,41 @@ class controller {
         $array_criteria[] = [ 'active', 'eq', true, 'bool' ];
         $array_obj_routes = $obj_route->get_all( $array_criteria );
 
+        $array_network = [ \BUSaragon\common\controller::ENDOPOINT_BUS_ROUTES_ARAGON => 'Arag&oacute;n', \BUSaragon\common\controller::ENDOPOINT_BUS_ROUTES_CTAZ => 'CTAZ' ];
         $str_return = '<table class="default"><thead><tr><td>Ruta</td><td>Origen</td><td>Destino</td></tr></thead><tbody>';
         $array_data = [];
         foreach ( $array_obj_routes as $obj_route ) {
-            $array_data[ $obj_route->network . '_' . $obj_route->name ] = [ $obj_route->name, $obj_route->origin, $obj_route->destination, (int) $obj_route->network ];
+            $array_data[ $obj_route->network . '_' . $obj_route->name ] = [ 'name' => $obj_route->name, 'origin' => $obj_route->origin, 'destination' => $obj_route->destination, 'network' => $array_network[ (int) $obj_route->network ] ];
         }
         ksort( $array_data );
-        $current_network = -1;
-        foreach ( $array_data as $data ) {
-            if ( $data[ 3 ] !== $current_network ) {
-                $str_return .= '<tr><td colspan="3" style="text-align: center;"><b>' . ( $data[ 3 ] === \BUSaragon\common\controller::ENDOPOINT_BUS_ROUTES_ARAGON ? 'GOBIERNO DE ARAG&Oacute;N' : 'CTAZ' ) . '</b></td></tr>';
-                $current_network = $data[ 3 ];
-            }
-            $str_return .= '<tr><td>' . \BUSaragon\common\utils::detect_utf8( $data[ 0 ] ) . '</td><td>' . \BUSaragon\common\utils::detect_utf8( $data[ 1 ] ) . '</td><td>' . \BUSaragon\common\utils::detect_utf8( $data[ 2 ] ) . '</td></tr>';
-        }
-        $str_return .= '</tbody></table';
+
+        $str_return = \Jupitern\Table\Table::instance()
+                                           ->setData( $array_data )
+                                           ->attr( 'table', 'id', 'routes_table' )
+                                           ->attr( 'table', 'class', 'default' )
+                                           ->column()
+                                           ->title( 'Red' )
+                                           ->value( 'network' )
+                                           ->add()
+                                           ->column()
+                                           ->title( 'Ruta' )
+                                           ->value( 'name' )
+                                           ->add()
+                                           ->column()
+                                           ->title( 'Origen' )
+                                           ->value( 'origin' )
+                                           ->add()
+                                           ->column()
+                                           ->title( 'Destino' )
+                                           ->value( 'destination' )
+                                           ->add()
+                                           ->render( true );
+        $str_return .= "<script type=\"text/javascript\">
+                            \$(document).ready( function () {
+                                \$('#routes_table').DataTable();
+                            });
+                        </script>";
+
         return $str_return;
     }
 
