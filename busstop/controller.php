@@ -240,16 +240,11 @@ class controller {
 
         $array_data = [];
         foreach ( $array_obj_cities as $obj_city ) {
-            $array_data[ $obj_city->network . '_' . $obj_city->origin ] = [ $obj_city->origin, (int) $obj_city->network ];
-        }
-        ksort( $array_data );
-        $table_data = [];
-        foreach ( $array_data as $data ) {
-            $table_data[] = [ 'origin' => $data[ 0 ] ];
+            $array_data[] = [ 'origin' => '<a href="#" onclick="$(\'#destination_dialog\').dialog(\'open\');">' . $obj_city->origin . '</a>', 'network' => (int) $obj_city->network ];
         }
 
         $str_return = \Jupitern\Table\Table::instance()
-                                           ->setData( $table_data )
+                                           ->setData( $array_data )
                                            ->attr( 'table', 'id', 'cities_table' )
                                            ->attr( 'table', 'class', 'default' )
                                            ->column()
@@ -257,10 +252,15 @@ class controller {
                                            ->value( 'origin' )
                                            ->add()
                                            ->render( true );
+
+        $str_return .= '<div id="destination_dialog" class="ui-dialog" title="Destinos">
+                        </div>';
         $str_return .= "<script type=\"text/javascript\">
                             \$(document).ready( function () {
                                 \$('#cities_table').DataTable();
                             });
+                            \$('#destination_dialog').dialog();
+                            \$('#destination_dialog').dialog('close');
                         </script>";
         return $str_return;
     }

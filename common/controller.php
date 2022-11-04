@@ -64,6 +64,7 @@ class controller {
         
             <!-- Scripts -->
             <script src="libs/js/jquery.min.js"></script>
+            <script src="libs/js/jquery-ui/jquery-ui.js"></script>
             <!-- DATATABLES -->
             <link href="//cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" rel="stylesheet">
             <script src="libs/js/jquery.dataTables.min.js"></script>

@@ -1,0 +1,32 @@
+{
+    "name"       : "jupitern/table",
+    "description": "HTML table generation for PHP. integrates with your favourite orm and js library",
+    "keywords"   : ["PHP html table generation", "framework", "ORM", "dataTables", "jQuery", "UI"],
+    "homepage"   : "https://github.com/jupitern/table",
+    "license"    : "MIT",
+    "authors"    : [
+        {
+            "name"    : "Nuno Chaves",
+            "email"   : "nuno.chaves@sapo.pt",
+            "role"    : "Developer"
+        }
+    ],
+    "support": {
+        "source": "https://github.com/jupitern/table",
+        "issues": "https://github.com/jupitern/table/issues"
+    },
+    "require"    :{
+        "php": ">=8.0",
+        "ext-json": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Jupitern\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+
+        }
+    }
+}
