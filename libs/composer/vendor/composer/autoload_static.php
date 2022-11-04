@@ -22,6 +22,7 @@ class ComposerStaticInitf075cee6becce57e1d656377ec857eae
         ),
         'J' => 
         array (
+            'Jupitern\\' => 9,
             'Jean85\\' => 7,
         ),
         'B' => 
@@ -38,6 +39,10 @@ class ComposerStaticInitf075cee6becce57e1d656377ec857eae
         'MongoDB\\' => 
         array (
             0 => __DIR__ . '/..' . '/mongodb/mongodb/src',
+        ),
+        'Jupitern\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/jupitern/table/src',
         ),
         'Jean85\\' => 
         array (

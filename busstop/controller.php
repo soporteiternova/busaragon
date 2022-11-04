@@ -46,6 +46,9 @@ class controller {
             case 'routes_listing':
                 return $this->routes_listing();
                 break;
+            case 'cities_listing':
+                return $this->cities_listing();
+                break;
             case 'listing':
             default:
                 return $this->listing();
@@ -76,6 +79,21 @@ class controller {
                     }
                 }
             }
+
+            // Routes
+            $array_endpoints = [ \BUSaragon\common\controller::ENDOPOINT_BUS_ROUTES_ARAGON, \BUSaragon\common\controller::ENDOPOINT_BUS_ROUTES_CTAZ ];
+
+            foreach ( $array_endpoints as $endpoint ) {
+                $api_url = \BUSaragon\common\controller::get_endpoint_url( $endpoint );
+                $array_objs = json_decode( file_get_contents( $api_url ) );
+                if ( !empty( $array_objs ) ) {
+                    foreach ( $array_objs as $obj ) {
+                        $bus_routes_obj = new modelroutes();
+                        $bus_routes_obj->update_from_api( $obj, $endpoint );
+                    }
+                }
+                var_dump( 'Updated ' . count( $array_objs ) . ' routes for ' . $endpoint );
+            }
         }
 
         // Remaining times for CTAZ bus stop
@@ -90,19 +108,17 @@ class controller {
             }
         }
 
-        // Routes
-        $array_endpoints = [ \BUSaragon\common\controller::ENDOPOINT_BUS_ROUTES_ARAGON, \BUSaragon\common\controller::ENDOPOINT_BUS_ROUTES_CTAZ ];
+        // Cities
+        $endpoint = \BUSaragon\common\controller::ENDOPOINT_BUS_CITIES_CTAZ;
+        $api_url = \BUSaragon\common\controller::get_endpoint_url( $endpoint );
+        $array_objs = json_decode( file_get_contents( $api_url ) );
 
-        foreach ( $array_endpoints as $endpoint ) {
-            $api_url = \BUSaragon\common\controller::get_endpoint_url( $endpoint );
-            $array_objs = json_decode( file_get_contents( $api_url ) );
-            if ( !empty( $array_objs ) ) {
-                foreach ( $array_objs as $obj ) {
-                    $bus_routes_obj = new modelroutes();
-                    $bus_routes_obj->update_from_api( $obj, $endpoint );
-                }
+        if ( !empty( $array_objs ) ) {
+            foreach ( $array_objs as $obj ) {
+                $cities_model = new modelcities();
+                $cities_model->update_from_api( $obj, $endpoint );
             }
-            var_dump( 'Updated ' . count( $array_objs ) . ' routes for ' . $endpoint );
+            var_dump( 'Updated ' . count( $array_objs ) . ' cities' );
         }
         return true;
     }
@@ -165,6 +181,43 @@ class controller {
             $str_return .= '<tr><td>' . \BUSaragon\common\utils::detect_utf8( $data[ 0 ] ) . '</td><td>' . \BUSaragon\common\utils::detect_utf8( $data[ 1 ] ) . '</td><td>' . \BUSaragon\common\utils::detect_utf8( $data[ 2 ] ) . '</td></tr>';
         }
         $str_return .= '</tbody></table';
+        return $str_return;
+    }
+
+    /**
+     * Shows cities tab listing
+     * @return string
+     * @throws \Exception
+     */
+    private function cities_listing() {
+        $obj_city = new modelcities();
+        $array_criteria[] = [ 'active', 'eq', true, 'bool' ];
+        $array_obj_cities = $obj_city->get_all( $array_criteria );
+
+        $array_data = [];
+        foreach ( $array_obj_cities as $obj_city ) {
+            $array_data[ $obj_city->network . '_' . $obj_city->origin ] = [ $obj_city->origin, (int) $obj_city->network ];
+        }
+        ksort( $array_data );
+        $table_data = [];
+        foreach ( $array_data as $data ) {
+            $table_data[] = [ 'origin' => $data[ 0 ] ];
+        }
+
+        $str_return = \Jupitern\Table\Table::instance()
+                                           ->setData( $table_data )
+                                           ->attr( 'table', 'id', 'cities_table' )
+                                           ->attr( 'table', 'class', 'default' )
+                                           ->column()
+                                           ->title( 'Municipio' )
+                                           ->value( 'origin' )
+                                           ->add()
+                                           ->render( true );
+        $str_return .= "<script type=\"text/javascript\">
+                            \$(document).ready( function () {
+                                \$('#cities_table').DataTable();
+                            });
+                        </script>";
         return $str_return;
     }
 

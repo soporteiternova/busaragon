@@ -8,6 +8,7 @@ $baseDir = dirname($vendorDir);
 return array(
     'Symfony\\Polyfill\\Php80\\' => array($vendorDir . '/symfony/polyfill-php80'),
     'MongoDB\\' => array($vendorDir . '/mongodb/mongodb/src'),
+    'Jupitern\\' => array($vendorDir . '/jupitern/table/src'),
     'Jean85\\' => array($vendorDir . '/jean85/pretty-package-versions/src'),
     'BUSaragon\\' => array($baseDir . '/../..'),
 );

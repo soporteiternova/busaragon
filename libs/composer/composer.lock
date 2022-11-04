@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d0337f086d0fa1f802a5993650759f0b",
+    "content-hash": "f3053663557e0d2b55e8e0775c2b09de",
     "packages": [
         {
             "name": "jean85/pretty-package-versions",
@@ -64,6 +64,57 @@
                 "source": "https://github.com/Jean85/pretty-package-versions/tree/2.0.5"
             },
             "time": "2021-10-08T21:21:46+00:00"
+        },
+        {
+            "name": "jupitern/table",
+            "version": "2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jupitern/table.git",
+                "reference": "184dc650868760341fccf2839c373e5bb31ac281"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jupitern/table/zipball/184dc650868760341fccf2839c373e5bb31ac281",
+                "reference": "184dc650868760341fccf2839c373e5bb31ac281",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": ">=8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Jupitern\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nuno Chaves",
+                    "email": "nuno.chaves@sapo.pt",
+                    "role": "Developer"
+                }
+            ],
+            "description": "HTML table generation for PHP. integrates with your favourite orm and js library",
+            "homepage": "https://github.com/jupitern/table",
+            "keywords": [
+                "PHP html table generation",
+                "datatables",
+                "framework",
+                "jquery",
+                "orm",
+                "ui"
+            ],
+            "support": {
+                "issues": "https://github.com/jupitern/table/issues",
+                "source": "https://github.com/jupitern/table"
+            },
+            "time": "2022-06-30T21:21:40+00:00"
         },
         {
             "name": "mongodb/mongodb",

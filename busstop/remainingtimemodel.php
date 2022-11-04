@@ -170,12 +170,18 @@ class remainingtimemodel extends \BUSaragon\common\model {
         }
 
         $str_return = '';
+        $date = time();
         foreach ( $this->times as $line_id => $routes ) {
             $str_return .= '<div style="max-height: 200px;overflow: scroll;"><table class="default"><thead><td>' . $this->lines[ $line_id ] . '</td></thead><tbody>';
             foreach ( $routes as $route_id => $times ) {
                 $str_return .= '<tr><td>' . $this->routes[ $line_id ][ $route_id ] . '</td></tr>';
                 if ( !empty( $this->times[ $line_id ][ $route_id ] ) ) {
-                    $str_return .= '<tr><td>' . implode( '</td></tr><tr><td>', $times );
+                    foreach ( $this->times[ $line_id ][ $route_id ] as $time ) {
+                        $timeseconds = strtotime( $time );
+                        if ( $timeseconds >= $date ) {
+                            $str_return .= '<tr><td>' . \BUSaragon\common\databasemongo::datetime_mongodate( $time, false, false ) . '</td></tr>';
+                        }
+                    }
                 }
             }
             $str_return .= '</tbody></table></div>';

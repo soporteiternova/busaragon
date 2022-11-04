@@ -36,6 +36,7 @@ class controller {
     const ENDOPOINT_BUS_VEHICLES_DISTANCE_ARAGON = 8;
     const ENDOPOINT_BUS_ROUTES_ARAGON = 9;
     const ENDOPOINT_BUS_ROUTES_CTAZ = 10;
+    const ENDOPOINT_BUS_CITIES_CTAZ = 11;
 
     /**
      * Funcion para mostrar la cabecera html
@@ -62,6 +63,9 @@ class controller {
         
             <!-- Scripts -->
             <script src="libs/js/jquery.min.js"></script>
+            <!-- DATATABLES -->
+            <link href="//cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" rel="stylesheet">
+            <script src="libs/js/jquery.dataTables.min.js"></script>
 		</head>';
 
         if ( $echo ) {
@@ -146,7 +150,7 @@ class controller {
                                 <ul>
                                     <li><a href="?&amp;zone=routes&amp;action=routes_listing">Listado de rutas</a></li>
                                     <li><a href="?&amp;zone=routes&amp;action=tab_listing">B&uacute;squeda de paradas</a></li>
-                                    <li><a href="right-sidebar.html">B&uacute;squeda municipios</a></li>
+                                    <li><a href="?&amp;zone=routes&amp;action=cities_listing">B&uacute;squeda municipios</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -250,6 +254,9 @@ class controller {
                 break;
             case self::ENDOPOINT_BUS_ROUTES_CTAZ:
                 $url = 'https://opendata.aragon.es/GA_OD_Core/download?resource_id=2188&formato=json';
+                break;
+            case self::ENDOPOINT_BUS_CITIES_CTAZ:
+                $url = 'https://opendata.aragon.es/GA_OD_Core/download?resource_id=2192&formato=json';
                 break;
         }
         return $url;
