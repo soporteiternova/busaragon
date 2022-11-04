@@ -1,21 +1,19 @@
 <?php
-
 namespace Jupitern\Table;
-use JetBrains\PhpStorm\Pure;
 
 class Table
 {
 
-	public array $columns = [];
-	public bool $hasFilters;
-    public string $titlesMode = "";
+	public $columns;
+	public $hasFilters;
+    public $titlesMode = null;
 
-    protected mixed $data;
-    protected array $css = [];
-    protected array $attrs = [];
+    protected $data;
+    protected $css = [];
+    protected $attrs = [];
 
 
-	#[Pure] protected function __construct()
+	protected function __construct()
 	{
 		$this->css['table'] = new Properties();
 		$this->css['tr'] = new Properties();
@@ -29,8 +27,8 @@ class Table
 	 *
 	 * @return static
 	 */
-	public static function instance(): static
-    {
+	public static function instance()
+	{
 		return new static();
 	}
 
@@ -40,8 +38,8 @@ class Table
 	 * @param $data
 	 * @return $this
 	 */
-	public function setData(mixed $data): static
-    {
+	public function setData($data)
+	{
 		$this->data = self::isJson($data) ? json_decode($data) : $data;
 
 		return $this;
@@ -50,12 +48,12 @@ class Table
     /**
      * set titles auto resolution mode from column name. Options: underscore, camelcase
      *
-     * @param string $titleMode
+     * @param $titleMode
      * @return $this
      * @throws \Exception
      */
-	public function setAutoTitles(string $titleMode): static
-    {
+	public function setAutoTitles($titleMode)
+	{
 		if (!in_array(strtolower($titleMode), ['camelcase', 'underscore'])) {
 			throw new \Exception("selected titles mode options not found");
 		}
@@ -73,8 +71,8 @@ class Table
 	 * @param $value
 	 * @return $this
 	 */
-	public function attr($elem, $attr, $value): static
-    {
+	public function attr($elem, $attr, $value)
+	{
 		$this->attrs[$elem]->add($attr, $value);
 
 		return $this;
@@ -87,23 +85,23 @@ class Table
 	 * @param $attrs
 	 * @return $this
 	 */
-	public function attrs($elem, $attrs): static
-    {
+	public function attrs($elem, $attrs)
+	{
 		$this->attrs[$elem]->addAll($attrs);
 
 		return $this;
 	}
 
-    /**
-     * add html table style
-     *
-     * @param string $elem
-     * @param string $attr
-     * @param mixed $value
-     * @return $this
-     */
-	public function css(string $elem, string $attr, mixed $value): static
-    {
+	/**
+	 * add html table style
+	 *
+	 * @param $elem
+	 * @param $attr
+	 * @param $value
+	 * @return $this
+	 */
+	public function css($elem, $attr, $value)
+	{
 		$this->css[$elem]->add($attr, $value);
 
 		return $this;
@@ -114,10 +112,9 @@ class Table
 	 *
 	 * @return TableColumn
 	 */
-	public function column(): TableColumn
-    {
+	public function column()
+	{
 		$column = new TableColumn($this);
-        $column->title('');
 		$this->columns[] = $column;
 
 		return $column;
@@ -127,10 +124,10 @@ class Table
 	 * generate table html
 	 *
 	 * @param bool $returnOutput
-	 * @return string
-     */
-	public function render(bool $returnOutput = false): string
-    {
+	 * @return mixed
+	 */
+	public function render($returnOutput = false)
+	{
 		$html  = '<table {tableAttrs} {tableCss}><thead><tr>{thead}</tr>{theadFilters}</thead>';
 		$html .= '<tbody>{tbody}</tbody></table>';
 
@@ -173,8 +170,8 @@ class Table
 	}
 
 
-	public static function isJson(mixed $string): bool
-    {
+	public static function isJson($string)
+	{
 		if (!is_string($string)) return false;
 		json_decode($string);
 

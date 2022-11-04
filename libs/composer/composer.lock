@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f3053663557e0d2b55e8e0775c2b09de",
+    "content-hash": "e797a56ff76983cdad65e3fe959d6aa2",
     "packages": [
         {
             "name": "jean85/pretty-package-versions",
@@ -67,21 +67,21 @@
         },
         {
             "name": "jupitern/table",
-            "version": "2.1.0",
+            "version": "2.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jupitern/table.git",
-                "reference": "184dc650868760341fccf2839c373e5bb31ac281"
+                "reference": "582a740918458f2a6e79b289dbf725ca914d7c94"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jupitern/table/zipball/184dc650868760341fccf2839c373e5bb31ac281",
-                "reference": "184dc650868760341fccf2839c373e5bb31ac281",
+                "url": "https://api.github.com/repos/jupitern/table/zipball/582a740918458f2a6e79b289dbf725ca914d7c94",
+                "reference": "582a740918458f2a6e79b289dbf725ca914d7c94",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "php": ">=8.0"
+                "php": ">=5.6"
             },
             "type": "library",
             "autoload": {
@@ -114,7 +114,7 @@
                 "issues": "https://github.com/jupitern/table/issues",
                 "source": "https://github.com/jupitern/table"
             },
-            "time": "2022-06-30T21:21:40+00:00"
+            "time": "2020-08-28T10:39:32+00:00"
         },
         {
             "name": "mongodb/mongodb",
