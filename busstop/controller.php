@@ -125,7 +125,7 @@ class controller {
                         $city->store();
                     }
                 }
-                
+
                 var_dump( 'Updated ' . count( $array_objs ) . ' cities' );
             }
 
@@ -276,7 +276,7 @@ class controller {
                                            ->add()
                                            ->render( true );
 
-        $str_return .= '<div id="destination_dialog" class="ui-dialog" style="background:#FFFFFF;border:5px grey;" title="Destinos">
+        /*$str_return .= '<div id="destination_dialog" class="ui-dialog" style="background:#FFFFFF;border:5px grey;" title="Destinos">
                         </div>';
         $str_return .= "<script type=\"text/javascript\">
                             \$(document).ready( function () {
@@ -284,7 +284,7 @@ class controller {
                             });
                             \$('#destination_dialog').dialog();
                             \$('#destination_dialog').dialog('close');
-                        </script>";
+                        </script>";*/
         return $str_return;
     }
 
