@@ -43,7 +43,7 @@ class map {
      *
      * @return string
      */
-    public static function create_map( $array_markers, $sizex = 600, $sizey = 400, $set_center_user = false ) {
+    public static function create_map( $array_markers, $sizex = 600, $sizey = 400, $set_center_user = false, $bus_stop_legend = false ) {
         $str = '';
 
         // JS googlemaps
@@ -52,7 +52,7 @@ class map {
         // Generamos el mapa
         $str .= "<script type=\"text/javascript\">
                 var map{$rand}=null;
- 				function initialize(){
+ 				function initialize{$rand}(){
                     const centerPoint = {lat: 41.65, lng: -0.87};
  					map{$rand} = new google.maps.Map(document.getElementById('incidents_map$rand'),{
                                                         zoom:12,
@@ -93,7 +93,6 @@ class map {
                 if ( isset( $marker[ 'url' ] ) && !empty( $marker[ 'url' ] ) ) {
                     $str .= "                                                $('#content_infowindow_" . $marker[ 'id' ] . "').load('" . $marker[ 'url' ] . "');";
                 }
-                //$str .= "                     if(opened_infowindow!==null)opened_infowindow.close();opened_infowindow=infowindow_" . $marker[ 'id' ];
                 $str .= "});";
             }
         }
@@ -108,12 +107,23 @@ class map {
                  }";
         }
 
+        if ( $bus_stop_legend ) {
+            $str .= 'const legend = document.getElementById("legend");
+            const div = document.createElement("div");
+            div.innerHTML=\'<img src="' . utils::get_server_url() . '/img/bus_icon_green.png">CTAZ<br/><img src="' . utils::get_server_url() . '/img/bus_icon_red.png">Gobierno de Arag&oacute;n\';
+            legend.appendChild(div);
+            map' . $rand . '.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);';
+        }
+
         $str .= '}
- 				$(document).ready(initialize);
+ 				$(document).ready(initialize' . $rand . ');
  				</script>';
 
         $str .= '<div class="incidents_map" id="incidents_map' . $rand . '" style="height:' . $sizey . 'px;width:100%;"></div>';
 
+        if ( $bus_stop_legend ) {
+            $str .= '<div id="legend" style="background: rgba(255,255,255,0.5);"><h3>Leyenda</h3></div>';
+        }
         return $str;
     }
 }

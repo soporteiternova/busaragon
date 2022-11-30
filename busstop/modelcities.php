@@ -54,6 +54,23 @@ class modelcities extends \BUSaragon\common\model {
             $ret = $this->store();
         }
 
+        // Actualizamos del gobierno de aragon....
+        $obj_busstop = new model();
+        $obj_city = new modelcities();
+        $array_criteria_busstop[] = [ 'network', 'eq', \BUSaragon\common\controller::ENDPOINT_BUS_STOP_ARAGON, 'int' ];
+        $array_busstop = $obj_busstop->get_all( $array_criteria_busstop );
+        foreach ( $array_busstop as $busstop ) {
+            $array_criteria_city[ 'city' ] = [ 'origin', 'eq', $busstop->city, 'string' ];
+            $n_cities = $obj_city->get_all( $array_criteria_city );
+            if ( count( $n_cities ) === 0 ) {
+                $city = new modelcities();
+                $city->network = \BUSaragon\common\controller::ENDOPOINT_BUS_CITIES_ARAGON;
+                $city->code = $busstop->code;
+                $city->origin = $busstop->city;
+                $city->store();
+            }
+        }
+
         return $ret;
     }
 

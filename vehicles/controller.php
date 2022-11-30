@@ -125,7 +125,7 @@ class controller {
         $obj_bus = new modelposition();
         $array_criteria[] = [ 'date', 'eq', date( 'Y-m-d' ), 'string' ];
         $array_markers = $obj_bus->get_array_markers( $array_criteria );
-        return \BUSaragon\common\map::create_map( $array_markers, 100, 800, true );
+        return \BUSaragon\common\map::create_map( $array_markers, 100, 800, true, true );
     }
 
     private function get_historic() {

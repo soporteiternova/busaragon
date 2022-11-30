@@ -38,6 +38,7 @@ class controller {
     const ENDOPOINT_BUS_ROUTES_CTAZ = 10;
     const ENDOPOINT_BUS_CITIES_CTAZ = 11;
     const ENDOPOINT_BUS_CITIES_DESTINATION_CTAZ = 12;
+    const ENDOPOINT_BUS_CITIES_ARAGON = 13;
 
     /**
      * Funcion para mostrar la cabecera html

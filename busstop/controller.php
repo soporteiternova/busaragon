@@ -146,7 +146,7 @@ class controller {
     private function listing() {
         $obj_busstop = new model();
         $array_markers = $obj_busstop->get_array_markers();
-        return \BUSaragon\common\map::create_map( $array_markers, 100, 800, true );
+        return \BUSaragon\common\map::create_map( $array_markers, 100, 800, true, true );
     }
 
     /**
