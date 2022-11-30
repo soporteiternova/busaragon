@@ -60,7 +60,7 @@ class modelcities extends \BUSaragon\common\model {
         $array_criteria_busstop[] = [ 'network', 'eq', \BUSaragon\common\controller::ENDPOINT_BUS_STOP_ARAGON, 'int' ];
         $array_busstop = $obj_busstop->get_all( $array_criteria_busstop );
         foreach ( $array_busstop as $busstop ) {
-            $array_criteria_city[ 'city' ] = [ 'origin', 'eq', $busstop->city, 'string' ];
+            $array_criteria_city[ 'city' ] = [ 'origin', 'eq', ucfirst( $busstop->city ), 'string' ];
             $n_cities = $obj_city->get_all( $array_criteria_city );
             if ( count( $n_cities ) === 0 ) {
                 $city = new modelcities();
