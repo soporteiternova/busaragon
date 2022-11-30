@@ -49,6 +49,9 @@ class controller {
             case 'cities_listing':
                 return $this->cities_listing();
                 break;
+            case 'get_city_destinations':
+                return $this->get_city_destinations();
+                break;
             case 'listing':
             default:
                 return $this->listing();
@@ -239,8 +242,10 @@ class controller {
         $array_obj_cities = $obj_city->get_all( $array_criteria );
 
         $array_data = [];
+        $url_destinations_partial = \BUSaragon\common\utils::get_server_url() . '/?zone=routes&action=get_city_destinations&code=';
         foreach ( $array_obj_cities as $obj_city ) {
-            $array_data[] = [ 'origin' => '<a href="#" onclick="$(\'#destination_dialog\').dialog(\'open\');">' . $obj_city->origin . '</a>', 'network' => (int) $obj_city->network ];
+            $url_destinations = $url_destinations_partial . $obj_city->code;
+            $array_data[] = [ 'origin' => '<a href="#" onclick="$(\'#destination_dialog\').dialog(\'open\');$(\'#destination_dialog\').load(\'' . $url_destinations . '\');">' . $obj_city->origin . '</a>', 'network' => (int) $obj_city->network ];
         }
 
         $str_return = \Jupitern\Table\Table::instance()
@@ -253,7 +258,7 @@ class controller {
                                            ->add()
                                            ->render( true );
 
-        $str_return .= '<div id="destination_dialog" class="ui-dialog" title="Destinos">
+        $str_return .= '<div id="destination_dialog" class="ui-dialog" style="background:#FFFFFF;border:5px grey;" title="Destinos">
                         </div>';
         $str_return .= "<script type=\"text/javascript\">
                             \$(document).ready( function () {
@@ -270,5 +275,28 @@ class controller {
 
         $obj_remainingtime = new remainingtimemodel();
         return $obj_remainingtime->get_busstop_times( $bus_stop_id );
+    }
+
+    /**
+     * Returns destinations for a given city
+     * @return string
+     */
+    private function get_city_destinations() {
+        $str_return = '';
+        $code = \BUSaragon\common\controller::get( 'code' );
+        $array_criteria[] = [ 'code_origin', 'eq', $code, 'int' ];
+        $array_criteria[] = [ 'active', 'eq', true, 'bool' ];
+        $obj_destinations = new modeldestinations();
+        $array_destinations = $obj_destinations->get_all( $array_criteria );
+
+        if ( !empty( $array_destinations ) ) {
+            $str_return .= '<ul>';
+            foreach ( $array_destinations as $destination ) {
+                $str_return .= '<li>' . $destination->destination . '</li>';
+            }
+            $str_return .= '</ul>';
+        }
+
+        return $str_return;
     }
 }

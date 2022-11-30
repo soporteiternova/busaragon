@@ -36,7 +36,7 @@ class modelcities extends \BUSaragon\common\model {
         $this->_id = null;
 
         if ( $api_endpoint === \BUSaragon\common\controller::ENDOPOINT_BUS_CITIES_CTAZ ) {
-            $array_criteria[] = [ 'code', 'eq', $api_object->id, 'string' ];
+            $array_criteria[] = [ 'code', 'eq', $api_object->id, 'int' ];
             $array_criteria[] = [ 'network', 'eq', $api_endpoint, 'int' ];
 
             $array_obj = $this->get_all( $array_criteria, [], 0, 1 );

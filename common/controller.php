@@ -87,6 +87,7 @@ class controller {
                                 <li><a href="https://twitter.com/tecnocarreteras" target="_blank" class="icon brands circle fa-twitter"><span class="label">Twitter</span></a></li>
                                 <li><a href="https://facebook.com/tecnocarreteras" target="_blank" class="icon brands circle fa-facebook-f"><span class="label">Facebook</span></a></li>
                                 <li><a href="https://github.com/soporteiternova/busaragon" target="_blank" class="icon brands circle fa-github"><span class="label">Github</span></a></li>
+                                <li><a href="https://aragon.es/" target="_blank"><img src="img/logo_gobierno_aragon.png" alt="Gobierno de Arag&oacute;n" style="width:10%; margin-top:40px;"/></a></li>
                             </ul>
                             <ul class="copyright">
                                 <li>Aplicaci&oacute;n subvencionada por el Gobierno de Arag&oacute;n - &copy; ' . date( 'Y' ) . ' <a href="https://www.iternova.net/" target="_blank">ITERNOVA</a></li>
@@ -141,14 +142,14 @@ class controller {
                         <ul>
                             <li class="' . $class_start . '"><a href="index.php">Inicio</a></li>
                             <li class="submenu ' . $class_map . '">
-                                <a href="#">Visualizaci&oacute;n sobre mapa</a>
+                                <a href="#">Mapas</a>
                                 <ul>
                                     <li><a href="?&amp;zone=bus_stop&amp;action=listing">Paradas</a></li>
                                     <li><a href="?&amp;zone=vehicles&amp;action=listing">Veh&iacute;culos</a></li>
                                 </ul>
                             </li>
                             <li class="submenu ' . $class_routes . '">
-                                <a href="#">Informaci&oacute;n sobre veh&iacute;culos</a>
+                                <a href="#">Veh&iacute;culos</a>
                                 <ul>
                                     <li><a href="?&amp;zone=routes&amp;action=routes_listing">Listado de rutas</a></li>
                                     <li><a href="?&amp;zone=routes&amp;action=tab_listing">B&uacute;squeda de paradas</a></li>
@@ -172,7 +173,7 @@ class controller {
                     <section class="wrapper style4 container">
 
                         <!--Content -->
-                            <div class="content" >';
+                            <div class="content" style="overflow-x: scroll">';
 
         switch ( controller::get( 'zone' ) ) {
             case 'bus_stop':
@@ -184,6 +185,7 @@ class controller {
                 $controller = new \BUSaragon\vehicles\controller();
                 $str .= $controller->actions();
             default:
+                $str .= '<p>Programa inform&aacute;tico de software libre denominado "Busarag&oacute;n" que forma parte de la subvenci&oacute;n de software libre, seg&uacute;n ORDEN CUS/942/2022, de 17 de junio, por la que se convocan subvenciones de apoyo al software libre dirigidas a microempresas y a trabajadores aut&oacute;nomos.</p>';
         }
         $str .= '        </div >
 

@@ -30,6 +30,7 @@ session_start();
 
 switch ( \BUSaragon\common\controller::get( 'action' ) ) {
     case 'get_remaining_time':
+    case 'get_city_destinations':
         $obj_controller = new \BUSaragon\busstop\controller();
         echo $obj_controller->actions();
         break;
