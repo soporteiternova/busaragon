@@ -348,17 +348,44 @@ class controller {
             $obj_city = reset( $array_cities );
             $str_return .= '<h4>' . $obj_city->origin . '</h4>';
         }
-        $array_criteria_cities[] = [ 'code', 'in', $array_destinations_id, 'int' ];
-        $array_criteria_cities[] = [ 'active', 'eq', true, 'bool' ];
-        $array_criteria_cities[] = [ 'network', 'eq', $obj_city->network, 'int' ];
 
-        $array_destinations = $obj_city->get_all( $array_criteria_cities );
+        $array_criteria_cities[] = [ 'destination', 'eq', $obj_city->origin, 'string' ];
+        $array_criteria_cities[] = [ 'active', 'eq', true, 'bool' ];
+        $array_criteria_cities[] = [ 'network', 'eq', \BUSaragon\common\controller::ENDOPOINT_BUS_ROUTES_CTAZ, 'int' ];
+
+        $obj_route = new modelroutes();
+        $array_destinations = $obj_route->get_all( $array_criteria_cities );
+        if ( empty( $array_destinations ) ) {
+            $array_criteria_cities = [];
+            $array_criteria_cities[] = [ 'code', 'in', $array_destinations_id, 'int' ];
+            $array_criteria_cities[] = [ 'active', 'eq', true, 'bool' ];
+            $array_criteria_cities[] = [ 'network', 'eq', $obj_city->network, 'int' ];
+            $array_destinations = $obj_city->get_all( $array_criteria_cities );
+        }
+
+        // Adding some from Aragon network
+        $array_criteria_cities = [];
+        $array_criteria_cities[] = [ 'destination', 'blike', $obj_city->origin, 'string' ];
+        $array_criteria_cities[] = [ 'active', 'eq', true, 'bool' ];
+        $array_criteria_cities[] = [ 'network', 'eq', \BUSaragon\common\controller::ENDOPOINT_BUS_ROUTES_ARAGON, 'int' ];
+        $array_destinations_aragon = $obj_route->get_all( $array_criteria_cities );
+
+        if ( !empty( $array_destinations_aragon ) ) {
+            $array_destinations = array_merge( $array_destinations, $array_destinations_aragon );
+        }
+
         if ( !empty( $array_destinations ) ) {
-            $str_return .= '<div style="max-height: 500px;overflow-y:auto; padding:10px;"><ul>';
-            $str_return .= '<ul>';
-            foreach ( $array_destinations as $destination ) {
-                $str_return .= '<li>' . $destination->origin . '</li>';
+            $array_to_order = $array_destinations;
+            $array_destinations = [];
+            foreach ( $array_to_order as $destination ) {
+                if ( strtolower( $destination->origin ) !== strtolower( $obj_city->origin ) ) {
+                    $array_destinations[] = mb_strtoupper( $destination->origin );
+                }
             }
+            sort( $array_destinations );
+            $array_destinations = array_unique( $array_destinations );
+            $str_return .= '<div style="max-height: 500px;overflow-y:auto; padding:10px;"><ul>';
+            $str_return .= '<ul><li>' . implode( '</li><li>', $array_destinations ) . '</li></ul>';
             $str_return .= '</ul></div>';
         } else {
             $str_return .= 'No existe informaci&oacute;n de destinos para este municipio';
