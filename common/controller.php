@@ -39,6 +39,7 @@ class controller {
     const ENDOPOINT_BUS_CITIES_CTAZ = 11;
     const ENDOPOINT_BUS_CITIES_DESTINATION_CTAZ = 12;
     const ENDOPOINT_BUS_CITIES_ARAGON = 13;
+    const ENDOPOINT_BUS_ROUTES_BUSSTOP_SECUENCE_CTAZ = 14;
 
     /**
      * Funcion para mostrar la cabecera html
@@ -265,6 +266,9 @@ class controller {
                 break;
             case self::ENDOPOINT_BUS_CITIES_DESTINATION_CTAZ:
                 $url = 'https://opendata.aragon.es/GA_OD_Core/download?resource_id=2193&formato=json';
+                break;
+            case self::ENDOPOINT_BUS_ROUTES_BUSSTOP_SECUENCE_CTAZ:
+                $url = 'https://opendata.aragon.es/GA_OD_Core/download?resource_id=2189&formato=json';
                 break;
         }
         return $url;

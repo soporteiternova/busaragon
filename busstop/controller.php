@@ -154,6 +154,17 @@ class controller {
                 $bus_stop_times_obj->update_times_from_api( $obj );
             }
         }
+
+        // Busstop secuence for routes
+        $api_url = \BUSaragon\common\controller::get_endpoint_url( \BUSaragon\common\controller::ENDOPOINT_BUS_ROUTES_BUSSTOP_SECUENCE_CTAZ );
+        $array_objs = json_decode( file_get_contents( $api_url ) );
+
+        if ( !empty( $array_objs ) ) {
+            foreach ( $array_objs as $obj ) {
+                $bus_stop_secuence_obj = new modelroutesbusstopsecuence();
+                $bus_stop_secuence_obj->update_from_api( $obj, \BUSaragon\common\controller::ENDOPOINT_BUS_ROUTES_BUSSTOP_SECUENCE_CTAZ );
+            }
+        }
         return true;
     }
 
@@ -276,15 +287,14 @@ class controller {
                                            ->add()
                                            ->render( true );
 
-        /*$str_return .= '<div id="destination_dialog" class="ui-dialog" style="background:#FFFFFF;border:5px grey;" title="Destinos">
-                        </div>';
+        //$str_return .= '<div id="destination_dialog" class="ui-dialog" style="background:#FFFFFF;border:5px grey;" title="Destinos"></div>';
         $str_return .= "<script type=\"text/javascript\">
                             \$(document).ready( function () {
                                 \$('#cities_table').DataTable();
                             });
-                            \$('#destination_dialog').dialog();
-                            \$('#destination_dialog').dialog('close');
-                        </script>";*/
+                            //\$('#destination_dialog').dialog();
+                            //\$('#destination_dialog').dialog('close');
+                        </script>";
         return $str_return;
     }
 
