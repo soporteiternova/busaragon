@@ -133,6 +133,7 @@ class controller {
                 break;
             default:
                 $class_start = 'current';
+                break;
         }
         $str = '<body class="no-sidebar is-preload">
             <div id="page-wrapper">
@@ -186,6 +187,7 @@ class controller {
             case 'vehicles':
                 $controller = new \BUSaragon\vehicles\controller();
                 $str .= $controller->actions();
+                break;
             default:
                 $str .= '<p>Programa inform&aacute;tico de software libre denominado "Busarag&oacute;n" que forma parte de la subvenci&oacute;n de software libre, seg&uacute;n ORDEN CUS/942/2022, de 17 de junio, por la que se convocan subvenciones de apoyo al software libre dirigidas a microempresas y a trabajadores aut&oacute;nomos.</p>';
         }

@@ -184,7 +184,7 @@ class controller {
     private function listing() {
         $obj_busstop = new model();
         $array_markers = $obj_busstop->get_array_markers();
-        return \BUSaragon\common\map::create_map( $array_markers, 100, 800, true, true );
+        return '<h2>Listado de paradas de autob&uacute;s</h2>Puede acceder a los horarios de cada ruta de cada una de las paradas pulsando en el icono de la misma. La aplicaci&oacute;n le localizar&aacute; de forma autom&aacute;tica en su posici&oacute;n actual.<br/><br/>' . \BUSaragon\common\map::create_map( $array_markers, 100, 800, true, true );
     }
 
     /**
