@@ -3300,3 +3300,13 @@ body.index #main {
     }
 
 }
+
+.ui-dialog {
+    background: #FFFFFF;
+    border: 1px solid #000000;
+}
+
+.ui-dialog-title {
+    padding: 0 10px 0 10px;
+    font-weight: bold;
+}
