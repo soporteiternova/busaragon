@@ -33,6 +33,8 @@ class remainingtimemodel extends \BUSaragon\common\model {
     public $lines = [];
     /** @var array route_id => H:i:s */
     public $times = [];
+    public $routes_id = [];
+    public $lines_id = [];
 
     public function update_times_from_api( $api_object ) {
         $ret = false;
@@ -57,11 +59,13 @@ class remainingtimemodel extends \BUSaragon\common\model {
                 $this->lines[ $api_object->id_linea ] = $api_object->name;
                 $this->routes[ $api_object->id_linea ] = [];
                 $this->times[ $api_object->id_linea ] = [];
+                $this->lines_id[] = $api_object->id_linea;
             }
 
             if ( !isset( $this->routes[ $api_object->id_linea ][ $api_object->id ] ) ) {
                 $this->routes[ $api_object->id_linea ][ $api_object->id ] = $api_object->route;
                 $this->times[ $api_object->id_linea ][ $api_object->id ] = [];
+                $this->routes_id[] = $api_object->id;
             }
 
             $time_id = array_search( $api_object->remaining_time, $this->times[ $api_object->id_linea ][ $api_object->id ] );
@@ -107,7 +111,7 @@ class remainingtimemodel extends \BUSaragon\common\model {
         }
 
         // Common attributes: string
-        $array_string = [ 'code', 'date', 'lines', 'routes' ];
+        $array_string = [ 'code', 'date', 'lines', 'routes', 'lines_id', 'routes_id' ];
         foreach ( $array_string as $key ) {
             if ( is_array( $this->{$key} ) ) {
                 foreach ( $this->{$key} as $val_key => $value ) {

@@ -90,7 +90,11 @@ class model extends \BUSaragon\common\model {
             }
         }
         $this->network = $endpoint;
-        $ret = $this->store();
+        if ( !empty( $this->city ) ) {
+            $ret = $this->store();
+        } else {
+            $ret = false;
+        }
 
         return $ret;
     }

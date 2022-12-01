@@ -159,11 +159,22 @@ abstract class model {
      * @return Model[] de objetos de este tipo o bien array() vacio en caso de no existir resultados
      * @throws \Exception
      */
-    public function get_all( $array_criteria = [], $sort = [], $skip = 0, $limit = 0, $index_id = '_id', $array_config = [ 'attributes' => [], 'objects' => true ] ) {
+    public function get_all( $array_criteria = [], $sort = [], $skip = 0, $limit = 0, $index_id = '_id', $array_config = [ 'attributes' => [], 'objects' => true, 'debug' => false ] ) {
 
         $return_array = [];
         $criteria = $this->get_query_filter( $array_criteria );
-
+        if ( !isset( $array_config[ 'attributes' ] ) ) {
+            $array_config[ 'attributes' ] = [];
+        }
+        if ( !isset( $array_config[ 'objects' ] ) ) {
+            $array_config[ 'objects' ] = true;
+        }
+        if ( !isset( $array_config[ 'debug' ] ) ) {
+            $array_config[ 'debug' ] = false;
+        }
+        if ( $array_config[ 'debug' ] ) {
+            var_dump( json_encode( $criteria ) );
+        }
         $cursor = $this->_database_controller->select_by_criteria( $this->_database_collection, $criteria, $sort, (int) $limit, (int) $skip, $array_config[ 'attributes' ] );
         if ( !empty( $cursor ) ) {
             if ( empty( $index_id ) ) {

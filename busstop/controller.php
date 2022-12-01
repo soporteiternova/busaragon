@@ -58,6 +58,9 @@ class controller {
             case 'get_busstop_destinations':
                 return $this->get_busstop_destinations();
                 break;
+            case 'get_route_time':
+                return $this->get_route_time();
+                break;
             case 'listing':
             default:
                 return $this->listing();
@@ -74,7 +77,7 @@ class controller {
     protected function crondaemon() {
         // First, we get bus stop listing for all Aragon
         $minute = (int) date( 'i' );
-        if ( true || ( $minute >= 0 && $minute <= 5 ) ) {
+        if ( ( $minute >= 0 && $minute <= 5 ) ) {
             $array_endpoints = [ \BUSaragon\common\controller::ENDPOINT_BUS_STOP_ARAGON, \BUSaragon\common\controller::ENDPOINT_BUS_STOP_CTAZ ];
 
             foreach ( $array_endpoints as $endpoint ) {
@@ -202,19 +205,20 @@ class controller {
             $array_data[] = [ 'city' => $obj_busstop->city, 'address' => $str_address ];
         }
 
-        $str_return = \Jupitern\Table\Table::instance()
-                                           ->setData( $array_data )
-                                           ->attr( 'table', 'id', 'busstop_table' )
-                                           ->attr( 'table', 'class', 'default' )
-                                           ->column()
-                                           ->title( 'Localidad' )
-                                           ->value( 'city' )
-                                           ->add()
-                                           ->column()
-                                           ->title( 'Direcc&oacute;n' )
-                                           ->value( 'address' )
-                                           ->add()
-                                           ->render( true );
+        $str_return = '<h2>Listado de paradas</h2>Listado de paradas de la red del Gobierno de Arag&oacute;n y del CTAZ. En el caso de las paradas correspondientes al CTAZ, puede acceder a posibles destinos desde dicha parada pulsando sobre la direcci&oacute;n de la misma.<br/><br/>';
+        $str_return .= \Jupitern\Table\Table::instance()
+                                            ->setData( $array_data )
+                                            ->attr( 'table', 'id', 'busstop_table' )
+                                            ->attr( 'table', 'class', 'default' )
+                                            ->column()
+                                            ->title( 'Localidad' )
+                                            ->value( 'city' )
+                                            ->add()
+                                            ->column()
+                                            ->title( 'Direcc&oacute;n' )
+                                            ->value( 'address' )
+                                            ->add()
+                                            ->render( true );
         $str_return .= '<div id="busstop_info_dialog" style="" title="Posibles destinos"></div>';
         $str_return .= "<script type=\"text/javascript\">
                             \$(document).ready( function () {
@@ -239,10 +243,17 @@ class controller {
         $array_network = [ \BUSaragon\common\controller::ENDOPOINT_BUS_ROUTES_ARAGON => 'Arag&oacute;n', \BUSaragon\common\controller::ENDOPOINT_BUS_ROUTES_CTAZ => 'CTAZ' ];
         $array_data = [];
         $url_routes_info_partial = \BUSaragon\common\utils::get_server_url() . '/?zone=routes&action=get_route_info&code=';
+        $url_routes_time_partial = \BUSaragon\common\utils::get_server_url() . '/?zone=routes&action=get_route_time&code=';
         foreach ( $array_obj_routes as $obj_route ) {
             $url_route_info = $url_routes_info_partial . $obj_route->code;
+            $url_route_time = $url_routes_time_partial . $obj_route->code;
             $str_name = $obj_route->network === \BUSaragon\common\controller::ENDOPOINT_BUS_ROUTES_CTAZ ? '<a href="javascript:void(0);" onclick="$(\'#route_info_dialog\').dialog(\'open\');$(\'#route_info_dialog\').load(\'' . $url_route_info . '\');">' . $obj_route->name . '</a>' : $obj_route->name;
-            $array_data[] = [ 'name' => $str_name, 'origin' => $obj_route->origin, 'destination' => $obj_route->destination, 'network' => $array_network[ (int) $obj_route->network ] ];
+            if ( $obj_route->network === \BUSaragon\common\controller::ENDOPOINT_BUS_ROUTES_CTAZ ) {
+                $str_actions = '<a href="javascript:void(0);" onclick="$(\'#route_time_dialog\').dialog(\'open\');$(\'#route_time_dialog\').load(\'' . $url_route_time . '\');"><img src="img/clock.png" alt="Tiempos de ruta" title="Tiempos de ruta" width="10%"/>';
+            } else {
+                $str_actions = '';
+            }
+            $array_data[] = [ 'name' => $str_name, 'origin' => $obj_route->origin, 'destination' => $obj_route->destination, 'network' => $array_network[ (int) $obj_route->network ], 'actions' => $str_actions ];
         }
 
         $str_return = '<h2>Listado de rutas</h2>Para las rutas correspondientes a la red del CTAZ, es posible consultar las paradas de las mismas, pinchando sobre el nombre de la ruta.<br/><br/>';
@@ -267,13 +278,20 @@ class controller {
                                             ->title( 'Destino' )
                                             ->value( 'destination' )
                                             ->add()
+                                            ->column()
+                                            ->title( 'Accciones' )
+                                            ->value( 'actions' )
+                                            ->add()
                                             ->render( true );
         $str_return .= '<div id="route_info_dialog" style="" title="Informaci&oacute;n de la ruta"></div>';
+        $str_return .= '<div id="route_time_dialog" style="" title="Tiempos de la ruta"></div>';
         $str_return .= "<script type=\"text/javascript\">
                             \$(document).ready( function () {
                                 \$('#routes_table').DataTable();
                             \$('#route_info_dialog').dialog();
                             \$('#route_info_dialog').dialog('close');
+                            \$('#route_time_dialog').dialog();
+                            \$('#route_time_dialog').dialog('close');
                             });
                         </script>";
 
@@ -484,5 +502,64 @@ class controller {
         }
 
         return $str_return;
+    }
+
+    /**
+     * Returns times for a route
+     * @return string
+     */
+    private function get_route_time() {
+        $str_return = '<div style="max-height:500px;overflow-y:scroll;padding:10px;">';
+        $code = \BUSaragon\common\controller::get( 'code' );
+        $array_criteria[] = [ 'code', 'eq', $code, 'string' ];
+        $array_criteria[] = [ 'active', 'eq', true, 'bool' ];
+        $array_criteria[] = [ 'network', 'eq', \BUSaragon\common\controller::ENDOPOINT_BUS_ROUTES_CTAZ, 'int' ];
+        $obj_route = new modelroutes();
+        $array_routes = $obj_route->get_all( $array_criteria );
+
+        if ( !empty( $array_routes ) ) {
+            $obj_route = reset( $array_routes );
+            $str_return .= '<h4>' . $obj_route->name . '</h4>';
+        }
+
+        $obj_time = new remainingtimemodel();
+        $array_criteria_time[] = [ 'routes_id', 'eq', $code, 'string' ];
+        $array_time = $obj_time->get_all( $array_criteria_time );
+
+        if ( !empty( $array_time ) ) {
+            $obj_busstop = new model();
+            $array_criteria_stop[] = [ 'network', 'eq', \BUSaragon\common\controller::ENDPOINT_BUS_STOP_CTAZ, 'int' ];
+
+            $str_line = false;
+            $str_other_lines = false;
+            foreach ( $array_time as $obj_time ) {
+                foreach ( $obj_time->times as $line => $routes ) {
+                    if ( array_key_exists( $code, $obj_time->times[ $line ] ) ) {
+                        $array_criteria_stop[ 1 ] = [ 'code', 'eq', $obj_time->code, 'string' ];
+                        $array_busstop = $obj_busstop->get_all( $array_criteria_stop );
+                        if ( !$str_line ) {
+                            $str_return .= 'Ruta perteneciente a la l&iacute;nea ' . $line . ': ' . $obj_time->lines[ $line ] . '<br/><br/>';
+                            $array_criteria_routes[] = [ 'lines_id', 'eq', $line, 'string' ];
+                            $array_times_routes = $obj_time->get_all( $array_criteria_routes );
+                            $other_routes = [];
+                            foreach ( $array_times_routes as $time_route ) {
+                                if ( isset( $time_route->routes[ $line ] ) ) {
+                                    $other_routes = array_merge( $other_routes, $time_route->routes[ $line ] );
+                                }
+                            }
+                            $other_routes = array_unique( $other_routes );
+                            $str_return .= 'Rutas relacionadas:<ul><li>' . implode( '</li><li>', $other_routes ) . '</li></ul>';
+                            $str_line = true;
+                        }
+                        if ( !empty( $array_busstop ) ) {
+                            $bus_stop = reset( $array_busstop );
+                            $str_return .= '<h4>' . $bus_stop->address . '</h4><div style="max-height: 100px;overflow-y:scroll"><ul><li>' . implode( '</li><li>', $obj_time->times[ $line ][ $code ] ) . '</li></ul></div>';
+                        }
+                    }
+                }
+            }
+        }
+
+        return $str_return . '</div>';
     }
 }
