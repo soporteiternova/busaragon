@@ -77,7 +77,7 @@ class controller {
     protected function crondaemon() {
         // First, we get bus stop listing for all Aragon
         $minute = (int) date( 'i' );
-        if ( ( $minute >= 0 && $minute <= 5 ) ) {
+        if ( ( $minute >= 10 && $minute <= 15 ) ) {
             $array_endpoints = [ \BUSaragon\common\controller::ENDPOINT_BUS_STOP_ARAGON, \BUSaragon\common\controller::ENDPOINT_BUS_STOP_CTAZ ];
 
             foreach ( $array_endpoints as $endpoint ) {
