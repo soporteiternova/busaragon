@@ -55,6 +55,9 @@ class controller {
             case 'get_route_info':
                 return $this->get_route_info();
                 break;
+            case 'get_busstop_destinations':
+                return $this->get_busstop_destinations();
+                break;
             case 'listing':
             default:
                 return $this->listing();
@@ -71,9 +74,8 @@ class controller {
     protected function crondaemon() {
         // First, we get bus stop listing for all Aragon
         $minute = (int) date( 'i' );
-        if ( $minute >= 0 && $minute <= 5 ) {
+        if ( true || ( $minute >= 0 && $minute <= 5 ) ) {
             $array_endpoints = [ \BUSaragon\common\controller::ENDPOINT_BUS_STOP_ARAGON, \BUSaragon\common\controller::ENDPOINT_BUS_STOP_CTAZ ];
-            $bus_stop_obj = new model();
 
             foreach ( $array_endpoints as $endpoint ) {
                 $api_url = \BUSaragon\common\controller::get_endpoint_url( $endpoint );
@@ -81,7 +83,8 @@ class controller {
 
                 if ( !empty( $array_objs ) ) {
                     foreach ( $array_objs as $obj ) {
-                        $bus_stop_obj->update_from_api( $obj );
+                        $bus_stop_obj = new model();
+                        $bus_stop_obj->update_from_api( $obj, $endpoint );
                     }
                 }
             }
@@ -192,8 +195,11 @@ class controller {
         $array_obj_busstop = $obj_busstop->get_all( $array_criteria );
 
         $array_data = [];
+        $url_bus_partial = \BUSaragon\common\utils::get_server_url() . '/?zone=routes&action=get_busstop_destinations&code=';
         foreach ( $array_obj_busstop as $obj_busstop ) {
-            $array_data[] = [ 'city' => $obj_busstop->city, 'address' => $obj_busstop->address ];
+            $url_buse_info = $url_bus_partial . $obj_busstop->code;
+            $str_address = $obj_busstop->network === \BUSaragon\common\controller::ENDPOINT_BUS_STOP_CTAZ ? '<a href="javascript:void(0);" onclick="$(\'#busstop_info_dialog\').dialog(\'open\');$(\'#busstop_info_dialog\').load(\'' . $url_buse_info . '\');">' . $obj_busstop->address . '</a>' : $obj_busstop->address;
+            $array_data[] = [ 'city' => $obj_busstop->city, 'address' => $str_address ];
         }
 
         $str_return = \Jupitern\Table\Table::instance()
@@ -209,9 +215,12 @@ class controller {
                                            ->value( 'address' )
                                            ->add()
                                            ->render( true );
+        $str_return .= '<div id="busstop_info_dialog" style="" title="Posibles destinos"></div>';
         $str_return .= "<script type=\"text/javascript\">
                             \$(document).ready( function () {
                                 \$('#busstop_table').DataTable();
+                            \$('#busstop_info_dialog').dialog();
+                            \$('#busstop_info_dialog').dialog('close');
                             });
                         </script>";
         return $str_return;
@@ -421,6 +430,57 @@ class controller {
             $str_return .= '</ul></div>';
         } else {
             $str_return .= 'No existe informaci&oacute;n asociada a esta ruta.';
+        }
+
+        return $str_return;
+    }
+
+    /**
+     * Returns possible destinations for a given bus stop
+     * @return string
+     */
+    private function get_busstop_destinations() {
+        $str_return = '';
+        $code = \BUSaragon\common\controller::get( 'code' );
+        $array_criteria[] = [ 'code', 'eq', $code, 'string' ];
+        $array_criteria[] = [ 'active', 'eq', true, 'bool' ];
+        $array_criteria[] = [ 'network', 'eq', \BUSaragon\common\controller::ENDPOINT_BUS_STOP_CTAZ, 'int' ];
+        $obj_busstop = new model();
+        $array_busstop = $obj_busstop->get_all( $array_criteria );
+        if ( !empty( $array_busstop ) ) {
+            $obj_busstop = reset( $array_busstop );
+            $str_return .= '<h4>' . $obj_busstop->city . ' - ' . $obj_busstop->address . '</h4>';
+        }
+
+        $obj_time = new remainingtimemodel();
+        $array_criteria_time[] = [ 'code', 'eq', $obj_busstop->code, 'string' ];
+        $array_time = $obj_time->get_all( $array_criteria_time );
+
+        $array_routes = [];
+        if ( !empty( $array_time ) ) {
+            foreach ( $array_time as $obj_time ) {
+                foreach ( $obj_time->routes as $line => $routes ) {
+                    foreach ( $routes as $route_id => $route ) {
+                        $array_routes[] = $route_id;
+                    }
+                }
+            }
+        }
+
+        $obj_route = new modelroutes();
+        $array_cirteria_routes[] = [ 'code', 'in', $array_routes, 'string' ];
+        $array_routes = $obj_route->get_all( $array_cirteria_routes );
+        if ( !empty( $array_routes ) ) {
+            $str_return .= '<div style="max-height: 500px;overflow-y:auto; padding:10px;"><ul>';
+            $array_sorted = [];
+            foreach ( $array_routes as $obj_route ) {
+                $array_sorted[] = strtoupper( $obj_route->destination );
+            }
+            $array_sorted = array_unique( $array_sorted );
+            sort( $array_sorted );
+            $str_return .= '<li>' . implode( '</li><li>', $array_sorted ) . '</li></ul></div>';
+        } else {
+            $str_return .= 'No existe informaci&oacute;n asociada a esta parada.';
         }
 
         return $str_return;

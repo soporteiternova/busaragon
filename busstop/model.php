@@ -39,19 +39,18 @@ class model extends \BUSaragon\common\model {
      *
      * @return bool
      */
-    public function update_from_api( $api_object ) {
-        $ret = false;
+    public function update_from_api( $api_object, $endpoint ) {
+
         $this->_id = null;
-        if ( isset( $api_object->cod_parada ) ) {
+        if ( $endpoint === \BUSaragon\common\controller::ENDPOINT_BUS_STOP_ARAGON ) {
             $array_criteria[] = [ 'code', 'eq', $api_object->cod_parada, 'string' ];
             $array_criteria[] = [ 'network', 'eq', \BUSaragon\common\controller::ENDPOINT_BUS_STOP_ARAGON, 'int' ];
 
             $array_obj = $this->get_all( $array_criteria, [], 0, 1 );
             if ( !empty( $array_obj ) ) {
                 $saved_obj = reset( $array_obj );
-                $this->_id = $saved_obj->_id;
+                $this->set( \BUSaragon\common\utils::cast_object_to_array( $saved_obj ) );
             }
-            $this->network = \BUSaragon\common\controller::ENDPOINT_BUS_STOP_ARAGON;
             $this->code = $api_object->cod_parada;
             if ( isset( $api_object->nucleo ) ) {
                 $this->city = $api_object->nucleo;
@@ -61,17 +60,16 @@ class model extends \BUSaragon\common\model {
             }
 
             $this->lat_lng = \BUSaragon\common\utils::OSGB36ToWGS84( $api_object->y, $api_object->x );
-            $ret = $this->store();
-        } elseif ( isset( $api_object->stop_id ) ) {
+        } else {
             $array_criteria[] = [ 'code', 'eq', $api_object->stop_id, 'string' ];
             $array_criteria[] = [ 'network', 'eq', \BUSaragon\common\controller::ENDPOINT_BUS_STOP_CTAZ, 'int' ];
 
             $array_obj = $this->get_all( $array_criteria, [], 0, 1 );
             if ( !empty( $array_obj ) ) {
                 $saved_obj = reset( $array_obj );
-                $this->_id = $saved_obj->_id;
+                $this->set( \BUSaragon\common\utils::cast_object_to_array( $saved_obj ) );
             }
-            $this->network = \BUSaragon\common\controller::ENDPOINT_BUS_STOP_CTAZ;
+
             $this->code = $api_object->stop_id;
             if ( isset( $api_object->nucleo ) ) {
                 $this->city = $api_object->nucleo;
@@ -80,9 +78,19 @@ class model extends \BUSaragon\common\model {
                 $this->address = $api_object->stop_name;
             }
 
-            $this->lat_lng = [ $api_object->stop_lat, $api_object->stop_lon ];
-            $ret = $this->store();
+            $this->lat_lng = [ (float) $api_object->stop_lat, (float) $api_object->stop_lon ];
+            if ( $this->city === '' ) {
+                $array_criteria_city[] = [ 'lat_lng', 'near', $this->lat_lng, 'float' ];
+                $array_criteria_city[] = [ 'city', 'ne', '', 'string' ];
+                $array_cities = $this->get_all( $array_criteria_city, [], 0, 1 );
+                if ( !empty( $array_cities ) ) {
+                    $obj_city = reset( $array_cities );
+                    $this->city = $obj_city->city;
+                }
+            }
         }
+        $this->network = $endpoint;
+        $ret = $this->store();
 
         return $ret;
     }
