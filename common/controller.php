@@ -169,7 +169,7 @@ class controller {
                     <header class="special container">
                         <span class="icon solid fa-mobile-alt"></span>
                         <h2>BUS <strong>Arag&oacute;n </strong ></h2 >
-                        <p>Toda la informac&oacute;n del transporte p&uacute;blico interurbano de viajeros por carretera en Arag&oacute;n a un click.</p>
+                        <p>Toda la informaci&oacute;n del transporte p&uacute;blico interurbano de viajeros por carretera en Arag&oacute;n a un click.</p>
                     </header >
 
                     <!--One -->
