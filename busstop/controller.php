@@ -77,7 +77,8 @@ class controller {
     protected function crondaemon() {
         // First, we get bus stop listing for all Aragon
         $minute = (int) date( 'i' );
-        if ( ( $minute >= 15 && $minute <= 25 ) ) {
+        $hour = (int) date( 'H' );
+        if ( $hour === 0 && $minute === 15 ) {
             $array_endpoints = [ \BUSaragon\common\controller::ENDPOINT_BUS_STOP_ARAGON, \BUSaragon\common\controller::ENDPOINT_BUS_STOP_CTAZ ];
 
             foreach ( $array_endpoints as $endpoint ) {
@@ -164,14 +165,16 @@ class controller {
             }
         }
 
-        // Busstop secuence for routes
-        $api_url = \BUSaragon\common\controller::get_endpoint_url( \BUSaragon\common\controller::ENDOPOINT_BUS_ROUTES_BUSSTOP_SECUENCE_CTAZ );
-        $array_objs = json_decode( file_get_contents( $api_url ) );
+        if ( $minute === 0 ) {
+            // Busstop secuence for routes
+            $api_url = \BUSaragon\common\controller::get_endpoint_url( \BUSaragon\common\controller::ENDOPOINT_BUS_ROUTES_BUSSTOP_SECUENCE_CTAZ );
+            $array_objs = json_decode( file_get_contents( $api_url ) );
 
-        if ( !empty( $array_objs ) ) {
-            foreach ( $array_objs as $obj ) {
-                $bus_stop_secuence_obj = new modelroutesbusstopsecuence();
-                $bus_stop_secuence_obj->update_from_api( $obj, \BUSaragon\common\controller::ENDOPOINT_BUS_ROUTES_BUSSTOP_SECUENCE_CTAZ );
+            if ( !empty( $array_objs ) ) {
+                foreach ( $array_objs as $obj ) {
+                    $bus_stop_secuence_obj = new modelroutesbusstopsecuence();
+                    $bus_stop_secuence_obj->update_from_api( $obj, \BUSaragon\common\controller::ENDOPOINT_BUS_ROUTES_BUSSTOP_SECUENCE_CTAZ );
+                }
             }
         }
         return true;
